@@ -1,5 +1,4 @@
 
-library(readr)
 # Columns List
 cols = c("cmte_id","cand_id","cand_nm","contbr_nm","contbr_city","contbr_st",
          "contbr_zip","contbr_employer","contbr_occupation","contb_receipt_amt",
@@ -11,3 +10,11 @@ ca_df["state"] = "CA"
 
 wi_df = read.csv("data/P00000001-WI.csv", col.names = cols, header = F)
 wi_df["state"] = "WI"
+
+#Get column names
+names(ca_df)
+
+#Explore each dataset independently
+dim(ca_df)
+dim(wi_df)
+

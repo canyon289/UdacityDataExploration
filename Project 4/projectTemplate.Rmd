@@ -1,4 +1,4 @@
-TITLE by YOUR_NAME_HERE
+Differential Analysis of State Donations by Ravin Kumar
 ========================================================
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
@@ -10,11 +10,28 @@ TITLE by YOUR_NAME_HERE
 # You should set echo=FALSE for all code chunks in your file.
 
 library(ggplot2)
+library(dplyr)
+library(lubridate)
 ```
-
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
+cols = c("cmte_id","cand_id","cand_nm","contbr_nm","contbr_city","contbr_st",
+         "contbr_zip","contbr_employer","contbr_occupation","contb_receipt_amt",
+         "contb_receipt_dt","receipt_desc","memo_cd","memo_text","form_tp","file_num",
+         "tran_id","election_tp", "state")
 
+ca_df = read.csv("data/P00000001-CA.csv", col.names = cols, header = F, skip = 1)
+ca_df["state"] = "CA"
+ca_df["contb_receipt_dt"] = dmy(ca_df[["contb_receipt_dt"]])
+
+wi_df = read.csv("data/P00000001-WI.csv", col.names = cols, header = F, skip = 1)
+wi_df["state"] = "WI"
+wi_df["contb_receipt_dt"] = dmy(wi_df[["contb_receipt_dt"]])
+
+```
+#
+```{r Initial_Exploration}
+names(ca_df)
 ```
 
 # Univariate Plots Section
@@ -96,3 +113,15 @@ library(ggplot2)
 ------
 
 # Reflection
+
+#Project Rubric
+https://docs.google.com/document/d/1L2Wwofs6D8Crd0QLZ1-RxBHlVoBZ3mec2xWgxrmUs5I/pub?embedded=true
+
+#Examples
+https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html
+https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html
+https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html
+
+#Dataset Reference
+ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt
+https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true
