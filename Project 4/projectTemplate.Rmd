@@ -1,5 +1,11 @@
 Differential Analysis of State Donations by Ravin Kumar
 ========================================================
+# Abstract
+At time of writing it is November 2015 and the 2016 election year is only monnths away. Since there is no incumbent both parties are running multiple candidates. As a result my curiosity in way candidates fund their campaigns is higher than usual.
+
+The Federal Election Commission requires that candidates publish details of the contributions publically. The dataset holds numerous interesting pieces of information, including contribution amount, donor size code, time of donation etc. I chose to analyze the contributions from California and Wisconsin only. This is an arbitrary choice, made largely because at different points in time I have been registered to vote in each state.
+
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
@@ -13,26 +19,88 @@ library(ggplot2)
 library(dplyr)
 library(lubridate)
 ```
-```{r echo=FALSE, Load_the_Data}
-# Load the Data
+```{r cache= TRUE, Load_the_Data}
+# Need to specify columns due to trailing comma in files
 cols = c("cmte_id","cand_id","cand_nm","contbr_nm","contbr_city","contbr_st",
          "contbr_zip","contbr_employer","contbr_occupation","contb_receipt_amt",
          "contb_receipt_dt","receipt_desc","memo_cd","memo_text","form_tp","file_num",
-         "tran_id","election_tp", "state")
+         "tran_id","election_tp", "DISCARD")
 
-ca_df = read.csv("data/P00000001-CA.csv", col.names = cols, header = F, skip = 1)
-ca_df["state"] = "CA"
-ca_df["contb_receipt_dt"] = dmy(ca_df[["contb_receipt_dt"]])
+#Load and bind california dataframes
+ca_df_2012 = read.csv(unzip("data/P00000001-CA_2012.zip"), col.names = cols, header = F, skip = 1)
 
-wi_df = read.csv("data/P00000001-WI.csv", col.names = cols, header = F, skip = 1)
-wi_df["state"] = "WI"
-wi_df["contb_receipt_dt"] = dmy(wi_df[["contb_receipt_dt"]])
+ca_df_2016 = read.csv(unzip("data/P00000001-CA_2016.zip"), col.names = cols, header = F, skip = 1)
+
+ca_df = rbind(ca_df_2012, ca_df_2016)
+
+#Load and bind Wisconsin files
+wi_df_2012 = read.csv(unzip("data/P00000001-WI_2012.zip"), col.names = cols, header = F, skip = 1)
+
+#Some trouble with letters in zip code
+#Removing occurence of letterL
+wi_df_2012["contbr_zip"] = gsub("L", "", wi_df_2012[["contbr_zip"]])
+
+#Load and bind 2016 data
+wi_df_2016 = read.csv(unzip("data/P00000001-WI_2016.zip"), col.names = cols, header = F, skip = 1)
+
+wi_df = rbind(wi_df_2012, wi_df_2016)
+
+#Bind all into one dataframe
+df = rbind(ca_df, wi_df)
+
+#election_tp columns looks like G2012, Splitting into type and year
+df["election_year"] = substr(df[["election_tp"]], 2,5)
+df["election_type"] = substr(df[["election_tp"]], 0,1)
+```
+
+# Data Munging
+Double checking columns of interest to ensure everything looks ok
+```{r Additional Data Munging}
+table(df["election_year"])
+
+#2102 is likely a a typo. Converting to 2012
+df[df["election_year"] == 2102, "election_year"] = 2012
+
+#Removing all values from 2008
+df = df[df["election_year"] != 2008,]
+```
+There are still 168 null values in the year column. Let's take a closer look
+```{r null_Values}
+head(df[df["election_year"] == "",])
+summary(df[df["election_year"] == "",])
+```
+Seems like most of these are refunds. For now setting aside these nulls into their own dataframe for exploration later
+
+```{r null_split}
+df_null = df[df["election_year"] == "",]
+df = df[df["election_year"] != ""]
 
 ```
-#
+
+Further exploration seems to show that the null values in the memo columns are represented as *
+```{r find_na}
+table(wi_df["memo_text"])
+table(wi_df["memo_cd"])
+```
+
+```{r replace_na}
+
+```
+
 ```{r Initial_Exploration}
-names(ca_df)
 ```
+#Questions
+What candidate received the most contribution per state?  
+What city contributes the most? What Zip Code?  
+What employer?  
+Occupation?  
+Contributions per election type?  
+Contribution cost averaged by population?  
+Contributions over time?  
+
+Do some comparisons for the states
+Histogram or density plot of contribution amount per state
+Contribution count over time for states
 
 # Univariate Plots Section
 ```{r echo=FALSE, Univariate_Plots}
@@ -113,6 +181,14 @@ names(ca_df)
 ------
 
 # Reflection
+
+# Appendix
+## File Links
+http://www.fec.gov/disclosurep/pnational.do
+ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip
+ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip
+ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip
+ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip
 
 #Project Rubric
 https://docs.google.com/document/d/1L2Wwofs6D8Crd0QLZ1-RxBHlVoBZ3mec2xWgxrmUs5I/pub?embedded=true

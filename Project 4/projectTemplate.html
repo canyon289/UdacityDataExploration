@@ -64,16 +64,283 @@ img {
 <div id="differential-analysis-of-state-donations-by-ravin-kumar" class="section level1">
 <h1>Differential Analysis of State Donations by Ravin Kumar</h1>
 </div>
-<div id="section" class="section level1">
-<h1></h1>
-<pre class="r"><code>names(ca_df)</code></pre>
-<pre><code>##  [1] &quot;cmte_id&quot;           &quot;cand_id&quot;           &quot;cand_nm&quot;          
-##  [4] &quot;contbr_nm&quot;         &quot;contbr_city&quot;       &quot;contbr_st&quot;        
-##  [7] &quot;contbr_zip&quot;        &quot;contbr_employer&quot;   &quot;contbr_occupation&quot;
-## [10] &quot;contb_receipt_amt&quot; &quot;contb_receipt_dt&quot;  &quot;receipt_desc&quot;     
-## [13] &quot;memo_cd&quot;           &quot;memo_text&quot;         &quot;form_tp&quot;          
-## [16] &quot;file_num&quot;          &quot;tran_id&quot;           &quot;election_tp&quot;      
-## [19] &quot;state&quot;</code></pre>
+<div id="abstract" class="section level1">
+<h1>Abstract</h1>
+<p>Given that its 2015 elections are</p>
+</div>
+<div id="data-munging" class="section level1">
+<h1>Data Munging</h1>
+<p>Double checking columns of interest to ensure everything looks ok</p>
+<pre class="r"><code>table(df[&quot;election_year&quot;])</code></pre>
+<pre><code>## 
+##            2008    2012    2016    2018    2102 
+##     163     180 1033719   61691       1       2</code></pre>
+<pre class="r"><code>#2102 is likely a a typo. Converting to 2012
+df[df[&quot;election_year&quot;] == 2102, &quot;election_year&quot;] = 2012
+
+#Removing all values from 2008
+df = df[df[&quot;election_year&quot;] != 2008,]</code></pre>
+<p>There are still 168 null values in the year column. Let’s take a closer look</p>
+<pre class="r"><code>head(df[df[&quot;election_year&quot;] == &quot;&quot;,])</code></pre>
+<pre><code>##         cmte_id   cand_id        cand_nm                  contbr_nm
+## 48839 C00500587 P20003281    Perry, Rick            BARDNI, BRIANNA
+## 48840 C00500587 P20003281    Perry, Rick              BOGERT, TRUDY
+## 48919 C00498444 P20003067  Huntsman, Jon LOWELL, DWIGHT EVERARD MR.
+## 52796 C00496034 P20002721 Santorum, Rick            MOBERG, CLIFTON
+## 88612 C00496034 P20002721 Santorum, Rick            GOMEZ, DOREEN E
+## 88613 C00496034 P20002721 Santorum, Rick           LORBETT, PHILLIP
+##         contbr_city contbr_st contbr_zip contbr_employer contbr_occupation
+## 48839     LOS GATOS        CA      95030                                  
+## 48840   LOS ANGELES        CA      90077                                  
+## 48919 SANTA BARBARA        CA      93108                                  
+## 52796      WOODLAND        CA      95776                                  
+## 88612      RICHMOND        CA      94806                                  
+## 88613       OAKLAND        CA      94602                                  
+##       contb_receipt_amt contb_receipt_dt receipt_desc memo_cd memo_text
+## 48839             -1250        20-APR-12       Refund                  
+## 48840              -500        23-APR-12       Refund                  
+## 48919              -100        16-APR-12       Refund                  
+## 52796              -795        20-APR-12       Refund                  
+## 88612               -55        30-JUL-12       Refund                  
+## 88613              -100        30-JUL-12       Refund                  
+##       form_tp file_num     tran_id election_tp DISCARD election_year
+## 48839   SB28A   784934  SB28A.4505                  NA              
+## 48840   SB28A   784934  SB28A.4561                  NA              
+## 48919   SB28A   797009 SB28A.43484                  NA              
+## 52796   SB28A   785670 SB28A.I4845                  NA              
+## 88612   SB28A   806246 SB28A.I6463                  NA              
+## 88613   SB28A   806246 SB28A.I6465                  NA              
+##       election_type
+## 48839              
+## 48840              
+## 48919              
+## 52796              
+## 88612              
+## 88613</code></pre>
+<pre class="r"><code>summary(df[df[&quot;election_year&quot;] == &quot;&quot;,])</code></pre>
+<pre><code>##       cmte_id        cand_id                    cand_nm  
+##  C00496497:79   P60003654:79   Gingrich, Newt       :79  
+##  C00581215:28   P60008885:28   Webb, James Henry Jr.:28  
+##  C00431445:12   P80003338:12   Obama, Barack        :12  
+##  C00573519:10   P60005915:10   Carson, Benjamin S.  :10  
+##  C00500587: 8   P20003281: 8   Perry, Rick          : 8  
+##  C00496034: 7   P20002721: 7   Santorum, Rick       : 7  
+##  (Other)  :19   (Other)  :19   (Other)              :19  
+##               contbr_nm          contbr_city  contbr_st   contbr_zip 
+##  WOODS-BRITT, ANNE :  5   SAN FRANCISCO: 11   CA:150    94585  :  5  
+##  HAINES, PHILP     :  3   LOS ANGELES  : 10   WI: 13    90067  :  3  
+##  SHEPARD, JAMES    :  3   SAN DIEGO    :  5             90210  :  3  
+##  HARTUNG, DANIEL J.:  3   SUISUN CITY  :  5             91403  :  3  
+##  DONAHUE, ROBERT   :  2   BEVERLY HILLS:  4             92657  :  3  
+##  FODOR, BARBARA    :  2   LOS GATOS    :  4             93465  :  3  
+##  (Other)           :145   (Other)      :124             (Other):143  
+##                 contbr_employer    contbr_occupation contb_receipt_amt 
+##                         :122                :122     Min.   :-10000.0  
+##  NOT EMPLOYED           :  6    RETIRED     :  7     1st Qu.: -2500.0  
+##  RETIRED                :  6    NOT EMPLOYED:  6     Median :  -500.0  
+##  SELF                   :  3    LAWYER      :  3     Mean   :  -905.7  
+##  HOMEMAKER              :  2    ATTORNEY    :  2     3rd Qu.:    62.5  
+##  THE WALT DISNEY COMPANY:  2    HOMEMAKER   :  2     Max.   :  5400.0  
+##  (Other)                : 22    (Other)     : 21                       
+##   contb_receipt_dt
+##  13-JUN-12:29     
+##  14-JUN-12:13     
+##  28-SEP-15: 9     
+##  04-MAY-12: 5     
+##  31-MAR-12: 5     
+##  31-JUL-15: 5     
+##  (Other)  :97     
+##                                                       receipt_desc memo_cd
+##  Refund                                                     :121    :163  
+##                                                             : 42   X:  0  
+##  ATTRIBUTION TO PARTNERS REQUESTED / REDESIGNATION REQUESTED:  0          
+##  EARMARK:  ACTRIGHT.COM PAC; REDESIGNATION FROM PRIMARY     :  0          
+##  EARMARK:  ACTRIGHT.COM PAC; REDESIGNATION TO GENERAL       :  0          
+##  EARMARK: ACTRIGHT.COM PAC; REDESIGNATION FROM PRIMARY      :  0          
+##  (Other)                                                    :  0          
+##                                 memo_text    form_tp       file_num      
+##                                      :163   SA17A: 42   Min.   : 756218  
+##  *                                   :  0   SA18 :  0   1st Qu.: 793611  
+##  * EARMARKED CONTRIBUTION: SEE BELOW :  0   SB28A:121   Median : 800152  
+##  * IN-KIND: CATERING, FOOD &amp; BEVERAGE:  0               Mean   : 868017  
+##  * IN-KIND: ENTERTAINMENT            :  0               3rd Qu.:1029311  
+##  * IN-KIND: OFFICE RENT              :  0               Max.   :1029670  
+##  (Other)                             :  0                                
+##     tran_id     election_tp  DISCARD        election_year     
+##  SB.0395:  2          :150   Mode:logical   Length:163        
+##  D25388 :  1   P      : 13   NA's:163       Class :character  
+##  D25389 :  1   G2008  :  0                  Mode  :character  
+##  D25390 :  1   G2012  :  0                                    
+##  D25395 :  1   O2012  :  0                                    
+##  D25396 :  1   P2008  :  0                                    
+##  (Other):156   (Other):  0                                    
+##  election_type     
+##  Length:163        
+##  Class :character  
+##  Mode  :character  
+##                    
+##                    
+##                    
+## </code></pre>
+<p>Seems like most of these are refunds. For now setting aside these nulls into their own dataframe for exploration later</p>
+<pre class="r"><code>df_null = df[df[&quot;election_year&quot;] == &quot;&quot;,]
+df = df[df[&quot;election_year&quot;] != &quot;&quot;]</code></pre>
+<p>Further exploration seems to show that the null values in the memo columns are represented as *</p>
+<pre class="r"><code>table(wi_df[&quot;memo_text&quot;])</code></pre>
+<pre><code>## 
+##                                                                                     
+##                                                                               63053 
+##                                                                                   * 
+##                                                                                  64 
+##                                                 * EARMARKED CONTRIBUTION: SEE BELOW 
+##                                                                                1115 
+##                                                       * IN-KIND: COMPUTER EQUIPMENT 
+##                                                                                   1 
+##                                                           * OBAMA VICTORY FUND 2012 
+##                                                                               10281 
+##                                                   ATTRIBUTION TO PARTNERS REQUESTED 
+##                                                                                  11 
+##                                                                        CHARGED BACK 
+##                                                                                   8 
+##                                                  CHARGED BACK $200.00 ON 08/29/2011 
+##                                                                                   1 
+##                                                              CHECK RETURNED BY BANK 
+##                                                                                   2 
+##                                                          CONTRIBUTION REFUNDED 7/13 
+##                                                                                   1 
+##                                                            DISGORGED TO US TREASURY 
+##                                                                                   2 
+##                                                           EARMARK:  CLUB FOR GROWTH 
+##                                                                                   1 
+##                                                           EARMARK: ACTRIGHT.COM PAC 
+##                                                                                   4 
+##                                                   EARMARK: AGC OF WISCONSIN CONDUIT 
+##                                                                                   2 
+##                                              EARMARK: REALTORS DIRECT GIVER PROGRAM 
+##                                                                                   6 
+##                                        EARMARK: REPUBLICAN PARTY OF WAUKESHA COUNTY 
+##                                                                                   2 
+##                                                  EARMARK: THE REINHART PROGESS FUND 
+##                                                                                   2 
+##                                                 EXCESS. CONTRIB. REFUNDED ON 5/9/12 
+##                                                                                   1 
+##                                                 EXCESSIVE CONTRIB. REFUNDED 8/17/12 
+##                                                                                   1 
+##                                                  EXCESSIVE CONTRIB. REFUNDED 8/9/12 
+##                                                                                   1 
+##                                               EXCESSIVE CONTRIB. REFUNDED OCT. 2012 
+##                                                                                   1 
+##                                               EXCESSIVE CONTRIB. REFUNDED ON 4/7/12 
+##                                                                                   1 
+##                                              EXCESSIVE CONTRIB. REFUNDED SEPT. 2012 
+##                                                                                   5 
+##                                           EXCESSIVE CONTRIBUTION REFUNDED OCT. 2012 
+##                                                                                   6 
+##                                           EXCESSIVE CONTRIBUTION REFUNDED ON 4/4/12 
+##                                                                                   1 
+##                       IN-KIND: EVENT STAGING EXPENSE REFUNDED $240.86 ON 08/30/2012 
+##                                                                                   1 
+##                       IN-KIND: EVENT STAGING EXPENSE REFUNDED $638.50 ON 09/19/2012 
+##                                                                                   2 
+##                       IN-KIND: EVENT STAGING EXPENSE REFUNDED $723.17 ON 10/31/2012 
+##                                                                                   2 
+##           IN-KIND: FACILITY RENTAL/CATERING SERVICES REFUNDED $421.36 ON 08/30/2012 
+##                                                                                   1 
+##           IN-KIND: FACILITY RENTAL/CATERING SERVICES REFUNDED $858.42 ON 09/25/2012 
+##                                                                                   2 
+##                            IN-KIND: FOOD &amp; BEVERAGES REFUNDED $241.52 ON 08/06/2012 
+##                                                                                   1 
+##                              IN-KIND: MEETING EXPENSE REFUNDED $47.28 ON 11/20/2012 
+##                                                                                   1 
+##                              IN-KIND: OFFICE SUPPLIES REFUNDED $50.53 ON 11/20/2012 
+##                                                                                   1 
+##                              IN-KIND: OFFICE SUPPLIES REFUNDED $56.84 ON 09/19/2012 
+##                                                                                   1 
+##                             IN-KIND: OFFICE SUPPLIES; REFUNDED $19.42 ON 07/25/2012 
+##                                                                                   1 
+##                             IN-KIND: OFFICE SUPPLIES; REFUNDED $71.06 ON 07/25/2012 
+##                                                                                   1 
+##                                             PARTNERSHIP: COLUMBUS ANTIQUE MALL, LLC 
+##                                                                                   1 
+##                                                            PRIMARY DEBT RETIREMENT; 
+##                                                                                   6 
+##                                                                        REATTRIBUTED 
+##                                                                                   2 
+##                                                                  REATTRIBUTED BELOW 
+##                                                                                   2 
+##                                                 REATTRIBUTED TO SPOUSE ON 8/15/2012 
+##                                                                                   1 
+##                                             REATTRIBUTION / REDESIGNATION REQUESTED 
+##                                                                                  38 
+##                                                                 REATTRIBUTION BELOW 
+##                                                                                   2 
+##                                                           REATTRIBUTION FROM SPOUSE 
+##                                                                                  37 
+##                                                             REATTRIBUTION REQUESTED 
+##                                                                                   1 
+##                                                             REATTRIBUTION TO SPOUSE 
+##                                                                                  37 
+##                                                          REDESIGNATION FROM GENERAL 
+##                                                                                  23 
+##                                                          REDESIGNATION FROM PRIMARY 
+##                                                                                  65 
+##                                                            REDESIGNATION TO GENERAL 
+##                                                                                  65 
+##                                                            REDESIGNATION TO PRIMARY 
+##                                                                                   2 
+##                                                       REDESIGNATION TO PRIMARY DEBT 
+##                                                                                  21 
+##                                                                 REFUND TO BE ISSUED 
+##                                                                                   4 
+##                                                      REFUNDED $100.00 ON 11/29/2011 
+##                                                                                   1 
+##                                                       REFUNDED $30.00 ON 03/14/2012 
+##                                                                                   1 
+##                                                      REFUNDED $500.00 ON 11/03/2012 
+##                                                                                   2 
+##                                                                     REFUNDED 5/3/12 
+##                                                                                   1 
+##                                                                   SEE REATTRIBUTION 
+##                                                                                  31 
+##                                                   TRANSFER FROM ROMNEY VICTORY INC. 
+##                                                                                9333 
+## TRANSFER FROM ROMNEY VICTORY INC.; EXCESSIVE WILL BE CORRECTED ON NEXT DISTRIBUTION 
+##                                                                                  23 
+##                                                   * REATTRIBUTED FROM GLENN SCHNADT 
+##                                                                                   1 
+##                                                      * REATTRIBUTED TO MARY SCHNADT 
+##                                                                                   1 
+##                                                                *BEST EFFORTS UPDATE 
+##                                                                                   1 
+##                 ATTRIBUTION TO PARTNERS REQUESTED;  PARTNERSHIP ATTRIBUTION REQUEST 
+##                                                                                   2 
+##                                                 CHARGED BACK $1000.00 ON 06/30/2015 
+##                                                                                   1 
+##                                                   CHARGED BACK $20.00 ON 06/24/2015 
+##                                                                                   1 
+##                                                  CHARGED BACK $200.00 ON 08/29/2015 
+##                                                                                   1 
+##                                                       EARMARKED FROM MAKE DC LISTEN 
+##                                                                                  30 
+##                                 REATTRIBUTION / REDESIGNATION REQUESTED (AUTOMATIC) 
+##                                                                                   6 
+##                                                         TRANSFER FROM RUBIO VICTORY 
+##                                                                                   1</code></pre>
+<pre class="r"><code>table(wi_df[&quot;memo_cd&quot;])</code></pre>
+<pre><code>## 
+##           X 
+## 64187 20144</code></pre>
+</div>
+<div id="questions" class="section level1">
+<h1>Questions</h1>
+<p>What candidate received the most contribution per state?<br />
+What city contributes the most? What Zip Code?<br />
+What employer?<br />
+Occupation?<br />
+Contributions per election type?<br />
+Contribution cost averaged by population?<br />
+Contributions over time?</p>
+<p>Do some comparisons for the states Histogram or density plot of contribution amount per state Contribution count over time for states</p>
 </div>
 <div id="univariate-plots-section" class="section level1">
 <h1>Univariate Plots Section</h1>
@@ -152,6 +419,13 @@ img {
 <div id="reflection" class="section level1">
 <h1>Reflection</h1>
 </div>
+<div id="appendix" class="section level1">
+<h1>Appendix</h1>
+<div id="file-links" class="section level2">
+<h2>File Links</h2>
+<p><a href="http://www.fec.gov/disclosurep/pnational.do" class="uri">http://www.fec.gov/disclosurep/pnational.do</a> <a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip</a> <a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip</a> <a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip</a> <a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip</a></p>
+</div>
+</div>
 <div id="project-rubric" class="section level1">
 <h1>Project Rubric</h1>
 <p><a href="https://docs.google.com/document/d/1L2Wwofs6D8Crd0QLZ1-RxBHlVoBZ3mec2xWgxrmUs5I/pub?embedded=true" class="uri">https://docs.google.com/document/d/1L2Wwofs6D8Crd0QLZ1-RxBHlVoBZ3mec2xWgxrmUs5I/pub?embedded=true</a></p>
@@ -159,6 +433,10 @@ img {
 <div id="examples" class="section level1">
 <h1>Examples</h1>
 <p><a href="https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html" class="uri">https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html</a> <a href="https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html" class="uri">https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html</a> <a href="https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html" class="uri">https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html</a></p>
+</div>
+<div id="dataset-reference" class="section level1">
+<h1>Dataset Reference</h1>
+<p><a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt</a> <a href="https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true" class="uri">https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true</a></p>
 </div>
 
 
