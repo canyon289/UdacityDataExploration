@@ -18,6 +18,7 @@ The Federal Election Commission requires that candidates publish details of the 
 library(ggplot2)
 library(dplyr)
 library(lubridate)
+library(scales)
 ```
 ```{r cache= TRUE, Load_the_Data}
 # Need to specify columns due to trailing comma in files
@@ -48,47 +49,91 @@ wi_df = rbind(wi_df_2012, wi_df_2016)
 #Bind all into one dataframe
 df = rbind(ca_df, wi_df)
 
-#election_tp columns looks like G2012, Splitting into type and year
-df["election_year"] = substr(df[["election_tp"]], 2,5)
+#Election_tp columns looks like G2012, Splitting into type and year
+df["election_year"] = as.integer(substr(df[["election_tp"]], 2,5))
 df["election_type"] = substr(df[["election_tp"]], 0,1)
+
+#Convert Contribution receipt to date
+df["contb_receipt_dt"] = dmy(df[["contb_receipt_dt"]])
 ```
 
 # Data Munging
 Double checking columns of interest to ensure everything looks ok
 ```{r Additional Data Munging}
-table(df["election_year"])
+table(df["election_year"], exclude = F)
 
 #2102 is likely a a typo. Converting to 2012
-df[df["election_year"] == 2102, "election_year"] = 2012
+df[which(df["election_year"] == 2102), "election_year"] = 2012
 
 #Removing all values from 2008
 df = df[df["election_year"] != 2008,]
+
+#Check again to see that everything took place correctly
+table(df["election_year"], exclude = F)
 ```
 There are still 168 null values in the year column. Let's take a closer look
+
 ```{r null_Values}
-head(df[df["election_year"] == "",])
-summary(df[df["election_year"] == "",])
+head(df[is.na(df["election_year"]),])
+summary(df[is.na(df["election_year"]),])
 ```
 Seems like most of these are refunds. For now setting aside these nulls into their own dataframe for exploration later
 
 ```{r null_split}
-df_null = df[df["election_year"] == "",]
-df = df[df["election_year"] != ""]
-
+df_null = df[is.na(df["election_year"]),]
+df = df[!is.na(df["election_year"]),]
 ```
 
-Further exploration seems to show that the null values in the memo columns are represented as *
+Further exploration seems to show that the null values in the memo columns are represented as *.
 ```{r find_na}
 table(wi_df["memo_text"])
 table(wi_df["memo_cd"])
 ```
+The memo columns are of little interest at this moment so we'll continue on.  
 
-```{r replace_na}
+##Questions
+
+### Count of contributions for each election
+```{r contribution_count}
+temp_df = df
 
 ```
 
+At time of writing in terms of candidates I am particularly interested which candidates are receiving the most money
 ```{r Initial_Exploration}
+temp_df = df %>% select(contbr_st, election_year, contb_receipt_amt) %>% 
+                 group_by(contbr_st, election_year) %>%
+                 summarise(Number_of_Contributions = n(),
+                           Sum_of_Contributions = sum(contb_receipt_amt)
+                           )
+ggplot(temp_df, aes(x = as.factor(election_year), y = Number_of_Contributions, fill = contbr_st )) + geom_bar(stat = "identity", position = "dodge") + ggtitle("Count of Contributions per state")
+
+ggplot(temp_df, aes(x = as.factor(election_year), y = Sum_of_Contributions, fill = contbr_st )) + geom_bar(stat = "identity", position = "dodge") + ggtitle("Sum of Contributions per state in Dollars") + scale_y_continuous(labels = dollar)
 ```
+It's no surprise that Calfornia far outpaces Wisconsin in both the count and dollar value of contributions as California is much more populous. For both graphs it would be desirable to show the values as ratio of the populations. A quick Google search shows that the population of Wisconsin at  2014 is around 5.7 million people. For California it averages around 38.2 million. As there is no 2015 data, and obviously no 2016 data. Looking back to 2012 the state population changed less than 3% for each. As is such for simplicity we'll just the 2014 reported population to normalize the data'
+
+```{r Population_ratio}
+population_ratio = function(x, contbr_st) {
+  # trace()
+  ca_population = 38000000
+  wi_population = 5700000
+  if (all(contbr_st == "CA")) {
+    return(x/ca_population)
+  }
+  if (all(contbr_st == "WI")) {
+    return(x/wi_population)
+  }
+}
+
+temp_df = temp_df %>% mutate(Ratio_of_Number_of_Contributions = population_ratio(Number_of_Contributions, contbr_st),
+Ratio_of_Sum_of_Contributions = population_ratio(Sum_of_Contributions, contbr_st))
+
+ggplot(temp_df, aes(x = as.factor(election_year), y = Ratio_of_Number_of_Contributions , fill = contbr_st )) + geom_bar(stat = "identity", position = "dodge") + ggtitle("Population Ratio of Count of Contributions per state")
+
+ggplot(temp_df, aes(x = as.factor(election_year), y = Ratio_of_Sum_of_Contributions, fill = contbr_st )) + geom_bar(stat = "identity", position = "dodge") + ggtitle("Population Ratio of Sum of Contributions per state in Dollars") + scale_y_continuous(labels = dollar)
+```
+
+
 #Questions
 What candidate received the most contribution per state?  
 What city contributes the most? What Zip Code?  
