@@ -66,7 +66,39 @@ img {
 </div>
 <div id="abstract" class="section level1">
 <h1>Abstract</h1>
-<p>Given that its 2015 elections are</p>
+<p>At time of writing it is November 2015 and the 2016 election year is only monnths away. Since there is no incumbent both parties are running multiple candidates. As a result my curiosity in way candidates fund their campaigns is higher than usual.</p>
+<p>The Federal Election Commission requires that candidates publish details of the contributions publically. The dataset holds numerous interesting pieces of information, including contribution amount, donor size code, time of donation etc. I chose to analyze the contributions from California and Wisconsin only. This is an arbitrary choice, made largely because at different points in time I have been registered to vote in each state.</p>
+<pre class="r"><code># Need to specify columns due to trailing comma in files
+cols = c(&quot;cmte_id&quot;,&quot;cand_id&quot;,&quot;cand_nm&quot;,&quot;contbr_nm&quot;,&quot;contbr_city&quot;,&quot;contbr_st&quot;,
+         &quot;contbr_zip&quot;,&quot;contbr_employer&quot;,&quot;contbr_occupation&quot;,&quot;contb_receipt_amt&quot;,
+         &quot;contb_receipt_dt&quot;,&quot;receipt_desc&quot;,&quot;memo_cd&quot;,&quot;memo_text&quot;,&quot;form_tp&quot;,&quot;file_num&quot;,
+         &quot;tran_id&quot;,&quot;election_tp&quot;, &quot;DISCARD&quot;)
+
+#Load and bind california dataframes
+ca_df_2012 = read.csv(unzip(&quot;data/P00000001-CA_2012.zip&quot;), col.names = cols, header = F, skip = 1)
+
+ca_df_2016 = read.csv(unzip(&quot;data/P00000001-CA_2016.zip&quot;), col.names = cols, header = F, skip = 1)
+
+ca_df = rbind(ca_df_2012, ca_df_2016)
+
+#Load and bind Wisconsin files
+wi_df_2012 = read.csv(unzip(&quot;data/P00000001-WI_2012.zip&quot;), col.names = cols, header = F, skip = 1)
+
+#Some trouble with letters in zip code
+#Removing occurence of letterL
+wi_df_2012[&quot;contbr_zip&quot;] = gsub(&quot;L&quot;, &quot;&quot;, wi_df_2012[[&quot;contbr_zip&quot;]])
+
+#Load and bind 2016 data
+wi_df_2016 = read.csv(unzip(&quot;data/P00000001-WI_2016.zip&quot;), col.names = cols, header = F, skip = 1)
+
+wi_df = rbind(wi_df_2012, wi_df_2016)
+
+#Bind all into one dataframe
+df = rbind(ca_df, wi_df)
+
+#election_tp columns looks like G2012, Splitting into type and year
+df[&quot;election_year&quot;] = substr(df[[&quot;election_tp&quot;]], 2,5)
+df[&quot;election_type&quot;] = substr(df[[&quot;election_tp&quot;]], 0,1)</code></pre>
 </div>
 <div id="data-munging" class="section level1">
 <h1>Data Munging</h1>
@@ -423,7 +455,10 @@ Contributions over time?</p>
 <h1>Appendix</h1>
 <div id="file-links" class="section level2">
 <h2>File Links</h2>
-<p><a href="http://www.fec.gov/disclosurep/pnational.do" class="uri">http://www.fec.gov/disclosurep/pnational.do</a> <a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip</a> <a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip</a> <a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip</a> <a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip</a></p>
+<p><a href="http://www.fec.gov/disclosurep/pnational.do" class="uri">http://www.fec.gov/disclosurep/pnational.do</a> <a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip</a><br />
+<a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip</a><br />
+<a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip</a><br />
+<a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip</a></p>
 </div>
 </div>
 <div id="project-rubric" class="section level1">
@@ -432,11 +467,14 @@ Contributions over time?</p>
 </div>
 <div id="examples" class="section level1">
 <h1>Examples</h1>
-<p><a href="https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html" class="uri">https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html</a> <a href="https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html" class="uri">https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html</a> <a href="https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html" class="uri">https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html</a></p>
+<p><a href="https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html" class="uri">https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html</a><br />
+<a href="https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html" class="uri">https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html</a><br />
+<a href="https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html" class="uri">https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html</a></p>
 </div>
 <div id="dataset-reference" class="section level1">
 <h1>Dataset Reference</h1>
-<p><a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt</a> <a href="https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true" class="uri">https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true</a></p>
+<p><a href="ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt" class="uri">ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt</a><br />
+<a href="https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true" class="uri">https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true</a></p>
 </div>
 
 

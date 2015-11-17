@@ -185,19 +185,19 @@ Contribution count over time for states
 # Appendix
 ## File Links
 http://www.fec.gov/disclosurep/pnational.do
-ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip
-ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip
-ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip
-ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip
+ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip  
+ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip  
+ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip  
+ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip  
 
 #Project Rubric
 https://docs.google.com/document/d/1L2Wwofs6D8Crd0QLZ1-RxBHlVoBZ3mec2xWgxrmUs5I/pub?embedded=true
 
 #Examples
-https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html
-https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html
-https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html
+https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html  
+https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html  
+https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html  
 
 #Dataset Reference
-ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt
+ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt  
 https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true
