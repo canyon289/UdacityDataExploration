@@ -91,13 +91,7 @@ table(wi_df["memo_cd"])
 ```
 The memo columns are of little interest at this moment so we'll continue on.  
 
-##Questions
-
-### Count of contributions for each election
-```{r contribution_count}
-temp_df = df
-
-```
+## Univariate Analysis
 
 At time of writing in terms of candidates I am particularly interested which candidates are receiving the most money
 ```{r Initial_Exploration}
@@ -130,27 +124,37 @@ Ratio_of_Sum_of_Contributions = population_ratio(Sum_of_Contributions, contbr_st
 
 ggplot(temp_df, aes(x = as.factor(election_year), y = Ratio_of_Number_of_Contributions , fill = contbr_st )) + geom_bar(stat = "identity", position = "dodge") + ggtitle("Population Ratio of Count of Contributions per state")
 
-ggplot(temp_df, aes(x = as.factor(election_year), y = Ratio_of_Sum_of_Contributions, fill = contbr_st )) + geom_bar(stat = "identity", position = "dodge") + ggtitle("Population Ratio of Sum of Contributions per state in Dollars") + scale_y_continuous(labels = dollar)
+ggplot(temp_df, aes(x = as.factor(election_year), y = Ratio_of_Sum_of_Contributions, fill = contbr_st)) + geom_bar(stat = "identity", position = "dodge") + ggtitle("Population Ratio of Sum of Contributions per state in Dollars") + scale_y_continuous(labels = dollar)
+```
+Even after after accounting for the population it seems that people from Wisconsin donated less per year, and also less people from Wisconsin donated to political campaigns.
+
+```{r top_candidates_per_date}
+temp_df = df %>% select(cand_nm, contb_receipt_amt, contbr_st) %>% group_by(cand_nm, contbr_st) %>% summarise(total_receipts = sum(contb_receipt_amt)) %>% group_by(contbr_st) %>% top_n(n = 5)
+
+
+ggplot(temp_df, aes(x = as.factor(cand_nm), y = total_receipts, fill = contbr_st)) + geom_bar(stat = "identity", position = "dodge") + ggtitle(" Sum of Contributions per State per Candidate in Dollars") + scale_y_continuous(labels = dollar)
+```
+As expected California contributes more overall. Also as expected Wisconsin contributed more to Mitt Romney than Barack Obama. The states also had the same pairings for top contributions to candidates, except for Jeb Bush and Scott Walker. There's little surprise that Wisconsin prefers to contribute more dollars to its governer Jeb Bush
+
+```{r top_candidates_per_date}
+temp_df = df %>% select(contbr_employer, contb_receipt_amt) %>% group_by(contbr_employer) %>% summarise(total_receipts = sum(contb_receipt_amt)) %>% top_n(n = 5)
+
+
+ggplot(temp_df, aes(x = as.factor(contbr_employer), y = total_receipts)) + geom_bar(stat = "identity") + ggtitle(" Sum of Contributions by Employer") + scale_y_continuous(labels = dollar)
+```
+```{r Histogram_of_Contributions}
+ggplot(df, aes(x = contb_receipt_amt)) + geom_histogram()
 ```
 
-
 #Questions
-What candidate received the most contribution per state?  
-What city contributes the most? What Zip Code?  
 What employer?  
-Occupation?  
 Contributions per election type?  
-Contribution cost averaged by population?  
 Contributions over time?  
 
 Do some comparisons for the states
 Histogram or density plot of contribution amount per state
 Contribution count over time for states
 
-# Univariate Plots Section
-```{r echo=FALSE, Univariate_Plots}
-
-```
 
 # Univariate Analysis
 
