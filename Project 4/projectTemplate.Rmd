@@ -55,6 +55,9 @@ df["election_type"] = substr(df[["election_tp"]], 0,1)
 
 #Convert Contribution receipt to date
 df["contb_receipt_dt"] = dmy(df[["contb_receipt_dt"]])
+
+#Remove all objects except final df
+rm(list=setdiff(ls(), "df"))
 ```
 
 # Data Munging
@@ -89,7 +92,24 @@ Further exploration seems to show that the null values in the memo columns are r
 table(wi_df["memo_text"])
 table(wi_df["memo_cd"])
 ```
-The memo columns are of little interest at this moment so we'll continue on.  
+The memo columns are of little interest at this moment so we'll continue on. 
+
+### Negative Values
+We except contributions to be positive, so were checking for negative values in the contribution
+```{r negative_values}
+head(df[df["contb_receipt_amt"] < 0,])
+df_negative = df[df["contb_receipt_amt"] <= 0,]
+df_negative = df_negative[order(df_negative[,"contb_receipt_amt"]),]
+
+refunds = sum(df_negative[,"contb_receipt_amt"])
+
+#Filter for positive
+df = df[df["contb_receipt_amt"] > 0,]
+donations = sum(df[,"contb_receipt_amt"])
+
+refunds/(donations - refunds)
+```
+
 
 ## Univariate Analysis
 
