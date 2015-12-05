@@ -43,4 +43,5 @@ Temporary Items
 .apdisk
 
 *.bz2
-*.osm
+*los-angeles_california.osm
+*.ropeproject

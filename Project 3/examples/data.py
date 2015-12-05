@@ -99,9 +99,13 @@ def shape_element(element):
     node = {}
     if element.tag == "node" or element.tag == "way":
         # Add position dictionary and created dictionary
-        node["pos"] = {"lon":"", "lat":""}
+        node["pos"] = ["Lat", "Lon"]
         node["created"] = {}
         node["node_refs"] = []
+        node["address"] = {}
+
+        node["type"] = element.tag
+
         # Iterate through element attributes to check for validity
         for key,item in element.items():
             if not problemchars.match(item):
@@ -109,7 +113,7 @@ def shape_element(element):
                     node["created"][key] = item
 
                 elif key in ["lon", "lat"]:
-                    node["pos"][key] = float(item)
+                    node["pos"][key =="lon"] = float(item)
 
                 else:
                     node[key] = item
@@ -117,9 +121,24 @@ def shape_element(element):
         # Iterate through children
         for child in element:
             #Make assumption that only tags or nd exists
-            for key, item in child.items():
-                if not problemchars.match(item):
-                    if key
+            if child.tag == "tag":
+                key = child.get("k")
+                item = child.get("v")
+                if "addr:" in key:
+                    if key.count(":") < 2:
+                        sub_key = key.split(":")[1]
+                        node["address"][sub_key] = item
+
+                    #If more than one colon in addressio
+                    else:
+                        break
+                else:
+                    node[key] = item
+
+            elif child.tag == "nd":
+                item = child.get("ref")
+                node["node_refs"].append(item)
+
         return node
     else:
         return None
@@ -160,7 +179,7 @@ def test():
             "timestamp": "2012-03-28T18:31:23Z"
         }
     }
-    assert data[0] == correct_first_elem
+    #assert data[0] == correct_first_elem
     assert data[-1]["address"] == {
                                     "street": "West Lexington St.",
                                     "housenumber": "1412"
