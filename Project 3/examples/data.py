@@ -5,6 +5,8 @@ import pprint
 import re
 import codecs
 import json
+import IPython
+
 """
 Your task is to wrangle the data and transform the shape of the data
 into the model we mentioned earlier. The output should be a list of dictionaries
@@ -37,12 +39,12 @@ You have to complete the function 'shape_element'.
 We have provided a function that will parse the map file, and call the function with the element
 as an argument. You should return a dictionary, containing the shaped data for that element.
 We have also provided a way to save the data in a file, so that you could use
-mongoimport later on to import the shaped data into MongoDB. 
+mongoimport later on to import the shaped data into MongoDB.
 
 Note that in this exercise we do not use the 'update street name' procedures
 you worked on in the previous exercise. If you are using this code in your final
-project, you are strongly encouraged to use the code from previous exercise to 
-update the street names before you save them to JSON. 
+project, you are strongly encouraged to use the code from previous exercise to
+update the street names before you save them to JSON.
 
 In particular the following things should be done:
 - you should process only 2 types of top level tags: "node" and "way"
@@ -50,7 +52,7 @@ In particular the following things should be done:
     - attributes in the CREATED array should be added under a key "created"
     - attributes for latitude and longitude should be added to a "pos" array,
       for use in geospacial indexing. Make sure the values inside "pos" array are floats
-      and not strings. 
+      and not strings.
 - if second level tag "k" value contains problematic characters, it should be ignored
 - if second level tag "k" value starts with "addr:", it should be added to a dictionary "address"
 - if second level tag "k" value does not start with "addr:", but contains ":", you can process it
@@ -95,9 +97,29 @@ CREATED = [ "version", "changeset", "timestamp", "user", "uid"]
 
 def shape_element(element):
     node = {}
-    if element.tag == "node" or element.tag == "way" :
-        # YOUR CODE HERE
-        
+    if element.tag == "node" or element.tag == "way":
+        # Add position dictionary and created dictionary
+        node["pos"] = {"lon":"", "lat":""}
+        node["created"] = {}
+        node["node_refs"] = []
+        # Iterate through element attributes to check for validity
+        for key,item in element.items():
+            if not problemchars.match(item):
+                if key in CREATED:
+                    node["created"][key] = item
+
+                elif key in ["lon", "lat"]:
+                    node["pos"][key] = float(item)
+
+                else:
+                    node[key] = item
+
+        # Iterate through children
+        for child in element:
+            #Make assumption that only tags or nd exists
+            for key, item in child.items():
+                if not problemchars.match(item):
+                    if key
         return node
     else:
         return None
@@ -119,31 +141,31 @@ def process_map(file_in, pretty = False):
     return data
 
 def test():
-    # NOTE: if you are running this code on your computer, with a larger dataset, 
-    # call the process_map procedure with pretty=False. The pretty=True option adds 
+    # NOTE: if you are running this code on your computer, with a larger dataset,
+    # call the process_map procedure with pretty=False. The pretty=True option adds
     # additional spaces to the output, making it significantly larger.
-    data = process_map('example.osm', True)
+    data = process_map('example.xml', True)
     #pprint.pprint(data)
-    
+
     correct_first_elem = {
-        "id": "261114295", 
-        "visible": "true", 
-        "type": "node", 
-        "pos": [41.9730791, -87.6866303], 
+        "id": "261114295",
+        "visible": "true",
+        "type": "node",
+        "pos": [41.9730791, -87.6866303],
         "created": {
-            "changeset": "11129782", 
-            "user": "bbmiller", 
-            "version": "7", 
-            "uid": "451048", 
+            "changeset": "11129782",
+            "user": "bbmiller",
+            "version": "7",
+            "uid": "451048",
             "timestamp": "2012-03-28T18:31:23Z"
         }
     }
     assert data[0] == correct_first_elem
     assert data[-1]["address"] == {
-                                    "street": "West Lexington St.", 
+                                    "street": "West Lexington St.",
                                     "housenumber": "1412"
                                       }
-    assert data[-1]["node_refs"] == [ "2199822281", "2199822390",  "2199822392", "2199822369", 
+    assert data[-1]["node_refs"] == [ "2199822281", "2199822390",  "2199822392", "2199822369",
                                     "2199822370", "2199822284", "2199822281"]
 
 if __name__ == "__main__":
