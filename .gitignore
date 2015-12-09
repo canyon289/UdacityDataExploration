@@ -45,3 +45,4 @@ Temporary Items
 *.bz2
 *los-angeles_california.osm
 *.ropeproject
+*.json

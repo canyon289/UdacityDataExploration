@@ -6,6 +6,9 @@ import re
 import codecs
 import json
 import IPython
+from audit import update_name 
+from street_name_mapping import la_mapping
+import pdb
 
 """
 Your task is to wrangle the data and transform the shape of the data
@@ -127,9 +130,18 @@ def shape_element(element):
                 if "addr:" in key:
                     if key.count(":") < 2:
                         sub_key = key.split(":")[1]
-                        node["address"][sub_key] = item
-
-                    #If more than one colon in addressio
+                        
+                        #If street address change the suffix to la_mapping
+                        if sub_key == "street":
+                            item = update_name(item, la_mapping)
+                        
+                        try:
+                            node["address"][sub_key] = item
+                        except TypeError:
+                            print("error")
+                            pdb.set_trace
+                            pass
+                    #If more than one colon in address
                     else:
                         break
                 else:
@@ -147,23 +159,27 @@ def shape_element(element):
 def process_map(file_in, pretty = False):
     # You do not need to change this file
     file_out = "{0}.json".format(file_in)
-    data = []
+    #data = []
+    i = 0
     with codecs.open(file_out, "w") as fo:
         for _, element in ET.iterparse(file_in):
             el = shape_element(element)
+            i += 1
+            if i % 1000 == 0:
+                print (i)
             if el:
-                data.append(el)
+                #data.append(el)
                 if pretty:
                     fo.write(json.dumps(el, indent=2)+"\n")
                 else:
                     fo.write(json.dumps(el) + "\n")
-    return data
+    return
 
 def test():
     # NOTE: if you are running this code on your computer, with a larger dataset,
     # call the process_map procedure with pretty=False. The pretty=True option adds
     # additional spaces to the output, making it significantly larger.
-    data = process_map('example.xml', True)
+    data = process_map('example.osm', True)
     #pprint.pprint(data)
 
     correct_first_elem = {
@@ -180,6 +196,7 @@ def test():
         }
     }
     #assert data[0] == correct_first_elem
+    print(data[-1]["address"])
     assert data[-1]["address"] == {
                                     "street": "West Lexington St.",
                                     "housenumber": "1412"
@@ -188,4 +205,5 @@ def test():
                                     "2199822370", "2199822284", "2199822281"]
 
 if __name__ == "__main__":
-    test()
+    #test()
+    process_map("../data/los-angeles_california.osm")

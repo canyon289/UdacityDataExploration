@@ -32,8 +32,8 @@ problemchars = re.compile(r'[=\+/&<>;\'"\?%#$@\,\. \t\r\n]')
 
 def key_type(element, keys):
     if element.tag == "tag":
-        print(element.get("k"))
         text = element.get("k")
+        
         if lower.match(text):
             key = "lower"
         elif lower_colon.match(text):
