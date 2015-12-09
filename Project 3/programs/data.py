@@ -160,13 +160,14 @@ def process_map(file_in, pretty = False):
     # You do not need to change this file
     file_out = "{0}.json".format(file_in)
     #data = []
-    i = 0
+    counter = 0
     with codecs.open(file_out, "w") as fo:
         for _, element in ET.iterparse(file_in):
             el = shape_element(element)
-            i += 1
-            if i % 1000 == 0:
-                print (i)
+            counter += 1
+
+            if counter % 1000 == 0:
+                print (counter)
             if el:
                 #data.append(el)
                 if pretty:
@@ -175,6 +176,20 @@ def process_map(file_in, pretty = False):
                     fo.write(json.dumps(el) + "\n")
     return
 
+def count_elements(file_in, output = False):
+    '''
+    Counts number of nodes and ways in osm file
+    '''
+    
+    i = 0
+    for _, element in ET.iterparse(file_in):
+        if element.tag in ["node", "way"]:
+            if i % 1000 ==0 and output = True:
+                print(i)
+            i+=1
+        
+    return i
+        
 def test():
     # NOTE: if you are running this code on your computer, with a larger dataset,
     # call the process_map procedure with pretty=False. The pretty=True option adds
@@ -205,5 +220,5 @@ def test():
                                     "2199822370", "2199822284", "2199822281"]
 
 if __name__ == "__main__":
-    #test()
-    process_map("../data/los-angeles_california.osm")
+    test()
+    #process_map("../data/los-angeles_california.osm")

@@ -12,22 +12,31 @@ The function process_map should return a set of unique user IDs ("uid")
 def get_user(element):
     return element.get("uid")
 
+def get_id(element):
+    if element.tag in ["way", "node"]:
+        return element.get("id")
+
 
 
 def process_map(filename):
     users = set()
+    ids = set()
     for _, element in ET.iterparse(filename):
         if get_user(element):
             users.add(get_user(element))
-
-    return users
+        
+        if get_id(element):
+            ids.add(get_id(element))
+            
+    return users, ids
 
 
 def test():
 
-    users = process_map('example.osm')
+    users, ids = process_map('example.osm')
     pprint.pprint(users)
     assert len(users) == 6
+    print(len(ids))
 
 
 
