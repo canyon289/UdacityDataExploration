@@ -176,7 +176,19 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Project-3---Open-Street-Map-Data-Wrangling">Project 3 - Open Street Map Data Wrangling<a class="anchor-link" href="#Project-3---Open-Street-Map-Data-Wrangling">&#182;</a></h1><h2 id="Abstract">Abstract<a class="anchor-link" href="#Abstract">&#182;</a></h2><p>Open Street Map is a project to create a open source mapping of the world. It could most easily be understood as the Wikipedia of maps, where anyone in the world can add to the mapping dataset. The data provides a rich dataset, both interesting in the context of learning more about various geographic areas around the world, or from the data itself, such as how many people contributed to the dataset for a particular area. With any project reliant on human input though the data is sometimes inconsistent.</p>
 <h3 id="Los-Angeles-California">Los Angeles California<a class="anchor-link" href="#Los-Angeles-California">&#182;</a></h3><p>Los Angeles California was chosen for two primary reasons. One is that Los Angeles is largest city in America, and the second most populous. It is very likely that there are more records in Los Angeles than most other American cities and it is also likely that there are more contributers. The second reason is that the I was born close to Los Angeles so to me it is a more interesting dataset.</p>
-<h2 id="Methodology">Methodology<a class="anchor-link" href="#Methodology">&#182;</a></h2><p>The map data was initially downloaded from MapZen as a bz2 file. The data was then preprocessed into a json file using Python, before being imported into a MongoDB instance for further analysis.</p>
+<h3 id="Problems-Encountered">Problems Encountered<a class="anchor-link" href="#Problems-Encountered">&#182;</a></h3><p>Three problems were found in the data file. All work is documented in the Cleaning Iteration Juptyer notebook</p>
+<p><strong>Address Suffixes</strong><br>
+Street names in the dataset were inconsistently abbreviated, or not abbreviated. for instance "Street" was sometimes represnted as "st." or "st" or in one occurence misspelled as "sttreet". Additionally other suffixes looked like zip codes or numbers. The obvious inconsistences were documented and changed before the addresses were loaded into mongodb</p>
+<p><strong>Tag names</strong><br>
+In the Los Angeles there were 1707 tag names. However 50% of the tag names were used 5 times or less, which suggested repeat or similar tags. When manually looking through the tag names this was confirmed. For instance <strong>Wifi_Access</strong> and <strong>Internet</strong> indicate whether internet access is available but with two tags it becomes more difficult to find all places that have internet access.</p>
+<p><strong>Opportunities for additional information</strong><br>
+More than 75% of the documents in the MongoDB database had the minimum number of tags, which in our formatted example was 7. Additionally as shown below, when searching for coffee shops the OSM data only shows 176. Intuition tells me that this number is much too low. This was confirmed by searching the Department of Public Health's website for the County of Los Angeles. By searching for "coffee" in just the names of the establishments they rate we can easily find over 1000 records.</p>
+<h3 id="Additional-Ideas">Additional Ideas<a class="anchor-link" href="#Additional-Ideas">&#182;</a></h3><h4 id="Import-establishments-from-Environmental-Health-Data">Import establishments from Environmental Health Data<a class="anchor-link" href="#Import-establishments-from-Environmental-Health-Data">&#182;</a></h4><p>Los Angeles rates every establishment on a regular basis which means a public list of the name, type of facility, and address of all these dining facilities are available and of high quality. An import of this dataset could be performed to add many relevant points of interest to OSM's dataset</p>
+<h4 id="OSM-App/FourSquare">OSM App/FourSquare<a class="anchor-link" href="#OSM-App/FourSquare">&#182;</a></h4><p>Partway through this analysis I realized that perhaps I would map more if it was easy to input the data. Given smartphones these days, I thought it would be very easy to create an app that automatically picks up the user location, suggests tags, and allows quick contributions to the dataset.</p>
+<p>When researching if this exists I found that FourSquare has already started this having switched from Google Maps to OSM in 2013. It is now possible for users to add information to OSM when checking in using Foursquare. FourSquare already includes gamification elements, and has a large userbase, so this should benefit the OSM dataset greatly.</p>
+<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">&#182;</a></h2><p>The LA dataset is quite large, over 1 gigabyte as a JSON, and took numerous hours to process on my laptop. When using Mongodb over Python parsing however the results were much quicker, and I would expect that when MongoDB is used on an external server the results are even quicker.</p>
+<p>The OSM street map data for Los Angeles was suprisingly clean, most fields were correct. However it is evident that multiple people are contributing as small differences such as <strong>ave</strong> vs <strong>ave.</strong> were numerous.</p>
+<p>I would be interested in seeing how this compared to the Google Maps dataset, or if certain businesses such as Craigslist, which use this dataset commercially, contribute under known accounts as well.</p>
 
 </div>
 </div>
@@ -186,7 +198,8 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Data-Munging">Data Munging<a class="anchor-link" href="#Data-Munging">&#182;</a></h2><h3 id="Verify-Tags">Verify Tags<a class="anchor-link" href="#Verify-Tags">&#182;</a></h3>
+<h2 id="Methodology">Methodology<a class="anchor-link" href="#Methodology">&#182;</a></h2><p>The map data was initially downloaded from MapZen as a bz2 file. The data was then preprocessed into a json file using Python, before being imported into a MongoDB instance for further analysis.</p>
+<h2 id="Data-Overiew">Data Overiew<a class="anchor-link" href="#Data-Overiew">&#182;</a></h2><h3 id="Verify-Tags">Verify Tags<a class="anchor-link" href="#Verify-Tags">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -862,10 +875,10 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&quot;cuisine&quot;</span><span class="p">:{</span><span class="s">&quot;$regex&quot;</span><span class="p">:</span> <span class="s">u&quot;.*coffee.*&quot;</span><span class="p">}})</span>
+<div class=" highlight hl-ipython3"><pre><span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&quot;cuisine&quot;</span><span class="p">:{</span><span class="s">&quot;$regex&quot;</span><span class="p">:</span> <span class="s">u&quot;.*coffee.*&quot;</span><span class="p">}})</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -876,27 +889,11 @@ div#notebook {
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>{&apos;_id&apos;: ObjectId(&apos;5667c307d9cd4cce5094adb3&apos;),
- &apos;address&apos;: {},
- &apos;amenity&apos;: &apos;cafe&apos;,
- &apos;created&apos;: {&apos;changeset&apos;: &apos;31418654&apos;,
-  &apos;timestamp&apos;: &apos;2015-05-24T12:32:16Z&apos;,
-  &apos;uid&apos;: &apos;68982&apos;,
-  &apos;user&apos;: &apos;kisaa&apos;,
-  &apos;version&apos;: &apos;4&apos;},
- &apos;cuisine&apos;: &apos;coffee&apos;,
- &apos;id&apos;: &apos;319781294&apos;,
- &apos;motorcar&apos;: &apos;no&apos;,
- &apos;name&apos;: &apos;Starbucks Coffee&apos;,
- &apos;node_refs&apos;: [],
- &apos;osm_type&apos;: &apos;node&apos;,
- &apos;pos&apos;: [34.1037593, -118.074087],
- &apos;source&apos;: &apos;usgs_imagery;survey;image&apos;,
- &apos;source_ref&apos;: &apos;AM909_DSCU3582&apos;}</pre>
+<pre>174</pre>
 </div>
 
 </div>
@@ -972,21 +969,11 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">&#182;</a></h2><p>The LA dataset is quite large, over 1 gigabyte as a JSON, and took numerous hours to process on my laptop. When using Mongodb over Python parsing however the results were much quicker, and I would expect that when MongoDB is used on an external server the results are even quicker.</p>
-<p>The OSM street map data for Los Angeles was suprisingly clean, most fields were correct. However it is evident that multiple people are contributing as small differences such as <strong>ave</strong> vs <strong>ave.</strong> were numerous.</p>
-<p>I would be interested in seeing how this compared to the Google Maps dataset, or if certain businesses such as Craigslist, which use this dataset commercially, contribute under known accounts as well.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Appendix">Appendix<a class="anchor-link" href="#Appendix">&#182;</a></h1><h2 id="Lesson-6-Exercises">Lesson 6 Exercises<a class="anchor-link" href="#Lesson-6-Exercises">&#182;</a></h2><p>All exercises are located in the programs folder. Modifications and extra functions outside of the required exercises are included for use with the LA OSM file. Additional modules exist for data munging the LA OSM file before conversion</p>
 <h2 id="Reference">Reference<a class="anchor-link" href="#Reference">&#182;</a></h2><p>Map Source - <a href="https://mapzen.com/data/metro-extracts">https://mapzen.com/data/metro-extracts</a><br>
-MongoDB Manual - <a href="https://docs.mongodb.org/manual/">https://docs.mongodb.org/manual/</a></p>
+MongoDB Manual - <a href="https://docs.mongodb.org/manual/">https://docs.mongodb.org/manual/</a><br>
+FourSquare and OSM - <a href="https://www.mapbox.com/blog/connecting-foursquare-openstreetmap/">https://www.mapbox.com/blog/connecting-foursquare-openstreetmap/</a><br>
+Los Angeles County Department of Public Health - <a href="https://ehservices.publichealth.lacounty.gov/ezsearch">https://ehservices.publichealth.lacounty.gov/ezsearch</a></p>
 
 </div>
 </div>
