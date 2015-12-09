@@ -6,8 +6,8 @@ import re
 import codecs
 import json
 import IPython
-from audit import update_name 
-from street_name_mapping import la_mapping
+#from audit import update_name 
+#from street_name_mapping import la_mapping
 import pdb
 
 """
@@ -107,7 +107,7 @@ def shape_element(element):
         node["node_refs"] = []
         node["address"] = {}
 
-        node["type"] = element.tag
+        node["osm_type"] = element.tag
 
         # Iterate through element attributes to check for validity
         for key,item in element.items():
@@ -184,7 +184,7 @@ def count_elements(file_in, output = False):
     i = 0
     for _, element in ET.iterparse(file_in):
         if element.tag in ["node", "way"]:
-            if i % 1000 ==0 and output = True:
+            if i % 1000 ==0 and output == True:
                 print(i)
             i+=1
         
@@ -220,5 +220,5 @@ def test():
                                     "2199822370", "2199822284", "2199822281"]
 
 if __name__ == "__main__":
-    test()
-    #process_map("../data/los-angeles_california.osm")
+    #test()
+    process_map("../data/los-angeles_california.osm")
