@@ -1,7 +1,7 @@
 """
 Your task in this exercise has two steps:
 
-- audit the OSMFILE and change the variable 'mapping' to reflect the changes needed to fix 
+- audit the OSMFILE and change the variable 'mapping' to reflect the changes needed to fix
     the unexpected street types to the appropriate ones in the expected list.
     You have to add mappings only for the actual problems you find in this OSMFILE,
     not a generalized solution, since that may and will depend on the particular area you are auditing.
@@ -18,7 +18,7 @@ OSMFILE = "example.osm"
 street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
 
 
-expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road", 
+expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road",
             "Trail", "Parkway", "Commons"]
 
 mapping = { "St": "Street",
@@ -43,7 +43,7 @@ def audit(osmfile):
     osm_file = open(osmfile, "r", encoding='utf-8', errors='replace')
     street_types = defaultdict(set)
     for event, elem in ET.iterparse(osm_file, events=("start",)):
-            
+
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
                 if is_street_name(tag):
@@ -58,6 +58,22 @@ def update_name(name, mapping):
         name = name.replace(suffix, mapping[suffix])
 
     return name
+
+def zip_update(item, node, zip_mapping):
+    '''
+    Updates zip code field based on mapping file provided
+    '''
+
+    if item == "Disneyland":
+        item = "92803"
+
+    try:
+        item = zip_mapping[tuple(node["pos"])]
+
+    except KeyError:
+        item = None
+
+    return
 
 
 def test():

@@ -6,8 +6,8 @@ import re
 import codecs
 import json
 import IPython
-#from audit import update_name 
-#from street_name_mapping import la_mapping
+from audit import update_name, zip_update
+from street_name_mapping import la_mapping, zip_mapping
 import pdb
 
 """
@@ -141,6 +141,11 @@ def shape_element(element):
                             print("error")
                             pdb.set_trace
                             pass
+                        
+                        if sub_key = "postcode":
+                            item = zip_update(item, node, zip_mapping)
+                            pdb.set_trace():
+                                
                     #If more than one colon in address
                     else:
                         break

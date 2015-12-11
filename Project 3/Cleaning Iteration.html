@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>Open Street Map</title>
+<title>Cleaning Iteration</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -174,302 +174,20 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Project-3---Open-Street-Map-Data-Wrangling">Project 3 - Open Street Map Data Wrangling<a class="anchor-link" href="#Project-3---Open-Street-Map-Data-Wrangling">&#182;</a></h1><h2 id="Abstract">Abstract<a class="anchor-link" href="#Abstract">&#182;</a></h2><p>Open Street Map is a project to create a open source mapping of the world. It could most easily be understood as the Wikipedia of maps, where anyone in the world can add to the mapping dataset. The data provides a rich dataset, both interesting in the context of learning more about various geographic areas around the world, or from the data itself, such as how many people contributed to the dataset for a particular area. With any project reliant on human input though the data is sometimes inconsistent.</p>
-<h3 id="Los-Angeles-California">Los Angeles California<a class="anchor-link" href="#Los-Angeles-California">&#182;</a></h3><p>Los Angeles California was chosen for two primary reasons. One is that Los Angeles is largest city in America, and the second most populous. It is very likely that there are more records in Los Angeles than most other American cities and it is also likely that there are more contributers. The second reason is that the I was born close to Los Angeles so to me it is a more interesting dataset.</p>
-<h3 id="Problems-Encountered">Problems Encountered<a class="anchor-link" href="#Problems-Encountered">&#182;</a></h3><p>Three problems were found in the data file. All work is documented in the Cleaning Iteration Juptyer notebook</p>
-<p><strong>Address Suffixes</strong><br>
-Street names in the dataset were inconsistently abbreviated, or not abbreviated. for instance "Street" was sometimes represnted as "st." or "st" or in one occurence misspelled as "sttreet". Additionally other suffixes looked like zip codes or numbers. The obvious inconsistences were documented and changed before the addresses were loaded into mongodb</p>
-<p><strong>Postal Codes</strong>
-A verification of the postcodes was made using MongoDB using the following query.</p>
-<blockquote><p>db.la_map.find({\$and:[{"address.postcode":{\$exists: true}},{"address.postcode" :{$not: /\d+-?\d+/}}]},{"address.postcode":1, "pos":1})</p>
-</blockquote>
-<p><img src="postcodes.png"></p>
-<p>This found all postcodes that did not conform to a <strong>digit-digit</strong> representation that's expected in America. Of the non conforming values two distinct issues arised. The first was fairly straightforward, someone labeled the post codes as Disneyland for 10 nodes. The fix was fairly simple, just replaced this value with Disneylands actual postcode. However there were four other instances where Ca, California's abbreviation, or the city was used as a post code. For these the actual post code was imputed using the latitude and longitude of the node. These were then added to a python dictionary and replaced as the JSON was processed</p>
+<h1 id="Exploratory-Analysis-and-cleaning">Exploratory Analysis and cleaning<a class="anchor-link" href="#Exploratory-Analysis-and-cleaning">&#182;</a></h1><p>This notebook will serve as an interation for cleaning and verifying fixes in the OSM data. The MongoDB test database will be used as it's much more performant than iterating over the JSON file</p>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">zip_mapping</span> <span class="o">=</span> <span class="p">{(</span> <span class="mf">34.0572495</span><span class="p">,</span> <span class="o">-</span><span class="mf">118.2751067</span><span class="p">):</span><span class="mi">90057</span><span class="p">,</span> <span class="p">(</span><span class="mf">33.6561412</span><span class="p">,</span> <span class="o">-</span><span class="mf">117.7536445</span><span class="p">):</span><span class="mi">92618</span><span class="p">,</span>\
-               <span class="p">(</span><span class="mf">34.375206</span><span class="p">,</span> <span class="o">-</span><span class="mf">118.5295727</span><span class="p">):</span><span class="mi">91321</span><span class="p">,</span> <span class="p">(</span><span class="mf">34.2623343</span><span class="p">,</span> <span class="o">-</span><span class="mf">118.3200911</span><span class="p">):</span><span class="mi">91040</span><span class="p">}</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Additional-Ideas">Additional Ideas<a class="anchor-link" href="#Additional-Ideas">&#182;</a></h3><h4 id="Import-establishments-from-Environmental-Health-Data">Import establishments from Environmental Health Data<a class="anchor-link" href="#Import-establishments-from-Environmental-Health-Data">&#182;</a></h4><p>Los Angeles rates every establishment on a regular basis which means a public list of the name, type of facility, and address of all these dining facilities are available and of high quality. An import of this dataset could be performed to add many relevant points of interest to OSM's dataset.</p>
-<p>Unfortunately this is only limited to the very specific region of Los Angeles, and does not provide a consistent solution that is able to used globally. Another issue is that while mass imports may sound simple, they can cause trouble in their initial import and reimports to update the data over time may not be possible. Issues arising from the TIGER import would likely occur with an Environment Health Data import as well.</p>
-<h4 id="Machine-Learning-to-autocorrect-or-suggest-fixes">Machine Learning to autocorrect or suggest fixes<a class="anchor-link" href="#Machine-Learning-to-autocorrect-or-suggest-fixes">&#182;</a></h4><p>It would be possible to create a machine learning algorithm which can predict attributes, or determine which attributes may be incorrect. For instance a machine learning algorithm could perform an analysis to determine zip codes. If one node has different postcode than all its surrounding nodes a clustering analysis may detect this. Similarly a machine learning algorithm could perhaps learn where nodes of interest are likely to exist.</p>
-<p>Similar to the issue above however this Machine Learning algorithm would have to be very generalizable to work across all the regions of the world, as postal codes and points of interest vary by country. Additionally the amount of human and computational resources to train and develop a model may be prohibitive for an effort that is largely sustained by donations. It also may stand against the goals of the organization, which on it's webpage proclaims "OpenStreetMap emphasizes local knowledge" and OpenStreetMap is built by a community of mappers that contribute and maintain data". It may go against the culture of the organization to have an algorithm contribute data.</p>
-<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">&#182;</a></h2><p>The LA dataset is quite large, over 1 gigabyte as a JSON, and took numerous hours to process on my laptop. When using Mongodb over Python parsing however the results were much quicker, and I would expect that when MongoDB is used on an external server the results are even quicker.</p>
-<p>The OSM street map data for Los Angeles was suprisingly clean, most fields were correct. However it is evident that multiple people are contributing as small differences such as <strong>ave</strong> vs <strong>ave.</strong> and mistaken postcodes. However in general it is quite amazing that without financial incentive Open Street Map has been able to create such a robust dataset of the things around us.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Methodology">Methodology<a class="anchor-link" href="#Methodology">&#182;</a></h2><p>The map data was initially downloaded from MapZen as a bz2 file. The data was then preprocessed into a json file using Python, before being imported into a MongoDB instance for further analysis.</p>
-<h2 id="Data-Overiew">Data Overiew<a class="anchor-link" href="#Data-Overiew">&#182;</a></h2><h3 id="Verify-Tags">Verify Tags<a class="anchor-link" href="#Verify-Tags">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">file_location</span> <span class="o">=</span> <span class="s">&quot;data\los-angeles_california.osm&quot;</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="kn">from</span> <span class="nn">programs</span> <span class="k">import</span> <span class="n">tags</span>
-<span class="n">tag</span> <span class="o">=</span> <span class="n">tags</span><span class="o">.</span><span class="n">process_map</span><span class="p">(</span><span class="n">file_location</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">tag</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&apos;lower&apos;: 1804949, &apos;lower_colon&apos;: 2122407, &apos;other&apos;: 176260, &apos;problemchars&apos;: 0}</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Out of the 4,103,616 tags luckily none of them contain any of characters labeled as problem characters in the Lesson 6 example.</p>
-<h3 id="Number-of-contributors-and-elements">Number of contributors and elements<a class="anchor-link" href="#Number-of-contributors-and-elements">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="kn">from</span> <span class="nn">programs</span> <span class="k">import</span> <span class="n">users</span>
-<span class="n">users</span><span class="p">,</span> <span class="n">ids</span> <span class="o">=</span> <span class="n">users</span><span class="o">.</span><span class="n">process_map</span><span class="p">(</span><span class="n">file_location</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="s">&quot;Number of Users: {0}     Number of Ids: {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">users</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>&apos;Number of Users: 3026     Number of Ids: 5952617&apos;</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="nb">list</span><span class="p">(</span><span class="n">ids</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[&apos;54466833&apos;, &apos;2170105523&apos;, &apos;123699544&apos;, &apos;7318336&apos;, &apos;1118375156&apos;]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Out of the millions of people that have visited or live in LA it seems that only 3026 people are responsible for all the points in the LA Open Street Mapb Project. Further analysis will be done after the MongoDB database has been created.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Count-Nodes-and-Ways">Count Nodes and Ways<a class="anchor-link" href="#Count-Nodes-and-Ways">&#182;</a></h3><p>A function was added to the data module which counts the number of ways and nodes elements in the original LA osm file. We'll be using this counter later to verify that import into Mongodb was successful</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="kn">from</span> <span class="nn">programs</span> <span class="k">import</span> <span class="n">data</span>
-<span class="n">count</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">count_elements</span><span class="p">(</span><span class="n">file_location</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Create-json-file">Create json file<a class="anchor-link" href="#Create-json-file">&#182;</a></h3><p>For import into Mongodb, the osm file, an XML type file, will be converted into a json using python. During the conversion process street names are checked and converted. The list of conversations was generated manually by reviewing a list of all street suffixes to check for repeats or typos. Processing the map takes significant resources and was precomputed outside of this notebook.</p>
-<table>
-<thead><tr>
-<th>File Type</th>
-<th>Size (mb)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>bz2</td>
-<td>89</td>
-</tr>
-<tr>
-<td>OSM</td>
-<td>1211</td>
-</tr>
-<tr>
-<td>json</td>
-<td>1568</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="k">if</span> <span class="k">True</span> <span class="o">==</span> <span class="k">False</span><span class="p">:</span> <span class="c">#Prevents execution</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">process_map</span><span class="p">(</span><span class="n">file_location</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="MongoDB">MongoDB<a class="anchor-link" href="#MongoDB">&#182;</a></h1><p>Mongodb is a popular NoSQL database that stores its data in collections of documents. Documents have a flexible schema, which works well for the OpenStreetMap data as not every node and way has the same "columns". If the Open Street Map data was to be stored in a tabular databases many fields would be null, for instance "Outside Seating" would be irrelevant for most businsses. Additionally adding extra data would be burdensome as new columns would have to be added to an ever growing table.</p>
-<h3 id="Loading-Data">Loading Data<a class="anchor-link" href="#Loading-Data">&#182;</a></h3><p>The JSON file generated by our previous Python method needs to initially be loaded into Mongodb using the following command in the terminal</p>
-<blockquote><p>mongoimport --db test --collection la_map --file los-angeles_california.osm.json</p>
-</blockquote>
-<p>After some exploratory analysis it was found that there were further issues in the OSM database. After making the necessary fixes the following command was used to load a collection in the final database.</p>
-<blockquote><p>mongoimport --db test --collection la_map --file los-angeles_california.osm.json</p>
-</blockquote>
-<h2 id="Queries">Queries<a class="anchor-link" href="#Queries">&#182;</a></h2><h3 id="Loading-Python-Driver">Loading Python Driver<a class="anchor-link" href="#Loading-Python-Driver">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="kn">from</span> <span class="nn">pymongo</span> <span class="k">import</span> <span class="n">MongoClient</span>
+<div class=" highlight hl-ipython3"><pre><span class="c"># Import Mongodb Driver</span>
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="k">import</span> <span class="n">MongoClient</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s">&#39;mongodb://localhost:27017/&#39;</span><span class="p">)</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">final</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">test</span>
 </pre></div>
 
 </div>
@@ -482,418 +200,7 @@ A verification of the postcodes was made using MongoDB using the following query
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Verifying-all-documents-imported">Verifying all documents imported<a class="anchor-link" href="#Verifying-all-documents-imported">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[11]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>5953758</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Counting-Number-of-Elements-in-entire-collection">Counting Number of Elements in entire collection<a class="anchor-link" href="#Counting-Number-of-Elements-in-entire-collection">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">():</span>
-    <span class="n">counter</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>45403693
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Number-of-Nodes-and-Ways">Number of Nodes and Ways<a class="anchor-link" href="#Number-of-Nodes-and-Ways">&#182;</a></h3><p>The Lesson 6 files initially used the <strong>type</strong> attribute to denote nodes and ways. After an initial exploration it was found that the OSM data already contained a type field. As was such another unused attribute named <strong>osm_type</strong> was created to denote nodes and ways</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">&quot;osm_type&quot;</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[&apos;node&apos;, &apos;way&apos;]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">aggregate</span><span class="p">([{</span><span class="s">&quot;$group&quot;</span><span class="p">:{</span><span class="s">&quot;_id&quot;</span><span class="p">:</span><span class="s">&quot;$osm_type&quot;</span><span class="p">,</span> <span class="s">&quot;Count&quot;</span><span class="p">:{</span><span class="s">&quot;$sum&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}}}]))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[{&apos;Count&apos;: 579785, &apos;_id&apos;: &apos;way&apos;}, {&apos;Count&apos;: 5373973, &apos;_id&apos;: &apos;node&apos;}]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="See-what-types-of-cuisines-are-available">See what types of cuisines are available<a class="anchor-link" href="#See-what-types-of-cuisines-are-available">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">&quot;cuisine&quot;</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[&apos;burger&apos;,
- &apos;japanese&apos;,
- &apos;american&apos;,
- &apos;thai&apos;,
- &apos;korean&apos;,
- &apos;vietnamese&apos;,
- &apos;sushi&apos;,
- &apos;mexican&apos;,
- &apos;italian&apos;,
- &apos;roast_beef&apos;,
- &apos;coffee&apos;,
- &apos;sandwich&apos;,
- &apos;hawaiian&apos;,
- &apos;ice_cream&apos;,
- &apos;pizza&apos;,
- &apos;donut&apos;,
- &apos;fish_and_chips&apos;,
- &apos;chinese&apos;,
- &apos;steak_house&apos;,
- &apos;chicken;mexican&apos;,
- &apos;chicken&apos;,
- &apos;Japanese Ramen&apos;,
- &apos;Northern Chinese&apos;,
- &apos;taiwanese&apos;,
- &apos;indian&apos;,
- &apos;mediterranean&apos;,
- &apos;cantonese&apos;,
- &apos;regional&apos;,
- &apos;coffee_shop&apos;,
- &apos;french&apos;,
- &apos;gastropub&apos;,
- &apos;noodle&apos;,
- &apos;asian&apos;,
- &apos;peruvian&apos;,
- &apos;greek&apos;,
- &apos;steak;seafood&apos;,
- &apos;italian;mediterranean&apos;,
- &apos;deli&apos;,
- &apos;burger;american&apos;,
- &apos;barbecue&apos;,
- &apos;american;bakery&apos;,
- &apos;seafood&apos;,
- &apos;Californian&apos;,
- &apos;breakfast&apos;,
- &apos;burger;mexican&apos;,
- &apos;american;brewpub&apos;,
- &apos;garlic&apos;,
- &apos;indonesian&apos;,
- &apos;pizza;chicken&apos;,
- &apos;catering&apos;,
- &apos;juice&apos;,
- &apos;sushi;steak;japanese&apos;,
- &apos;seafood;steak&apos;,
- &apos;mexican;pizza&apos;,
- &apos;seafood;sushi;steak&apos;,
- &apos;greek;burger&apos;,
- &apos;seafood;california&apos;,
- &apos;chinese;sushi&apos;,
- &apos;seafood;steak;hawaiian&apos;,
- &apos;sushi;japanese;steak&apos;,
- &apos;mexican;steak;seafood&apos;,
- &apos;sushi;california&apos;,
- &apos;chicken;ice_cream&apos;,
- &apos;seafood;brewpub&apos;,
- &apos;hotdog&apos;,
- &apos;Taiwanese&apos;,
- &apos;steak&apos;,
- &apos;sausage&apos;,
- &apos;armenian&apos;,
- &apos;mexican; seafood&apos;,
- &apos;ice_cream;burger&apos;,
- &apos;Vietnamise&apos;,
- &apos;cuban&apos;,
- &apos;chinese,_taiwanese&apos;,
- &apos;italian;pizza&apos;,
- &apos;bagel&apos;,
- &apos;Diner&apos;,
- &apos;fusion&apos;,
- &apos;bakery&apos;,
- &apos;vegetarian&apos;,
- &apos;mexican;hawaiian&apos;,
- &apos;german&apos;,
- &apos;Pizza&apos;,
- &apos;sichuan&apos;,
- &apos;russian&apos;,
- &apos;English&apos;,
- &apos;american;mexican&apos;,
- &apos;mexican;mexican_seafood&apos;,
- &apos;Xin Jiang BBQ&apos;,
- &apos;yogurt&apos;,
- &apos;burger;ice_cream&apos;,
- &apos;brazilian&apos;,
- &apos;vegan&apos;,
- &apos;buffet&apos;,
- &apos;pizza;pasta;burger&apos;,
- &apos;international&apos;,
- &apos;spanish&apos;,
- &apos;afghan&apos;,
- &apos;frozen_yogurt&apos;,
- &apos;kebab&apos;,
- &apos;middle_eastern&apos;,
- &apos;mongolian&apos;,
- &apos;sub&apos;,
- &apos;salad&apos;,
- &apos;German/Swiss&apos;,
- &apos;Juice_Bar&apos;,
- &apos;coffee_shop,_sandwiches, ice cream floats, root beer&apos;,
- &apos;Cuban&apos;,
- &apos;pretzels&apos;,
- &apos;healthy&apos;,
- &apos;Pizza,_Burgers,_Breakfast&apos;,
- &apos;Vietnamese_&apos;,
- &apos;persian&apos;,
- &apos;Burger_Bar&apos;,
- &apos;El_Salvadorian&apos;,
- &apos;Chicken_Sandwiches&apos;,
- &apos;Frozen_yogurt&apos;,
- &apos;sushi,_asian&apos;,
- &apos;sandwiches&apos;,
- &apos;Mexican,_Indian,_American&apos;,
- &apos;sushi,_sashimi,_teriyaki&apos;,
- &apos;mexican,_asian,_fusion&apos;,
- &apos;korean_bbq&apos;,
- &apos;Bagel&apos;,
- &apos;Pizza,_Italian,_sandwiches, pasta&apos;,
- &apos;Frozen_Yogurt,_Desert,ice cream&apos;,
- &apos;Chinese,_Thai&apos;,
- &apos;donuts&apos;,
- &apos;fondue&apos;,
- &apos;Chinese_(Taiwanese)&apos;,
- &apos;Middle_Eastern_Cuisine&apos;,
- &apos;hot_dog&apos;,
- &apos;funnel_cake&apos;,
- &apos;Smoothies&apos;,
- &apos;cafe&apos;,
- &apos;pancake&apos;,
- &apos;Bakery&apos;,
- &apos;Latin&apos;,
- &apos;Healthy&apos;,
- &apos;New_York_Pizza&apos;,
- &apos;indian; pakistani&apos;,
- &apos;Brewery,_Pub,_American&apos;,
- &apos;latin_american&apos;,
- &apos;chinese_All_you_can_eat&apos;,
- &apos;BBQ_All_you_can_eat&apos;,
- &apos;american_All_you_can_eat&apos;,
- &apos;chinese,_Hawaiian_BBQ&apos;,
- &apos;indian,_vegetarian&apos;,
- &apos;mexican_[cafeteria_style,_low_cost,_family_food]&apos;,
- &apos;mexican,_vegetarian&apos;,
- &apos;international,_vegan,_salads,_vegetarian&apos;,
- &apos;boba&apos;,
- &apos;Mongolian_BBQ&apos;,
- &apos;Dim_Sum,_Cantonese&apos;,
- &apos;Cantonese,_Dim_Sum,_Seafood&apos;,
- &apos;Taiwan,_Chinese&apos;,
- &apos;Cantonese,_Dim_Sum,_Chinese&apos;,
- &apos;chinese,_noodle&apos;,
- &apos;noodle,_Taiwanese,_Chinese&apos;,
- &apos;Chinese,_Cantonese&apos;,
- &apos;Seafood,_Chinese&apos;,
- &apos;Cantonese&apos;,
- &apos;Healthy_Delicious&apos;,
- &apos;american,breakfast&apos;,
- &apos;italian,pizza&apos;,
- &apos;Yogurt&apos;,
- &apos;Mexican&apos;,
- &apos;Asian&apos;,
- &apos;Seafood_+_Raw_Bar&apos;,
- &apos;moroccan&apos;,
- &apos;steakhouse&apos;,
- &apos;Cheesecake_Factory&apos;,
- &apos;American_Breakfast&apos;,
- &apos;Pho&apos;,
- &apos;Persian&apos;,
- &apos;sea_food&apos;,
- &apos;hot_dogs&apos;,
- &apos;Baked_Goods&apos;,
- &apos;fast_food&apos;,
- &apos;country&apos;,
- &apos;burger;mexican;breakfast&apos;,
- &apos;soup;salad;pasta&apos;,
- &apos;steak;chicken;seafood;pasta&apos;,
- &apos;sandwich;pizza;pasta;soup;salad&apos;,
- &apos;pancakes;breakfast;burger;sandwich;regional&apos;,
- &apos;american;steak;chicken;pasta;seafood&apos;,
- &apos;Chinese,_Szechuan&apos;,
- &apos;burger;sandwich;breakfast&apos;,
- &apos;italian;soup;bread&apos;,
- &apos;fish&apos;,
- &apos;cake&apos;,
- &apos;pasta&apos;,
- &apos;Korean_All_You Can Eat&apos;,
- &apos;french;american&apos;,
- &apos;burger;deli;mexican;breakfast&apos;,
- &apos;breakfast;sandwhich;burger&apos;,
- &apos;burger;salad;soup;mexican&apos;,
- &apos;chicken;breakfast;dessert&apos;,
- &apos;America&apos;,
- &apos;Pies,coffee,desserts&apos;,
- &apos;New_Orleans&apos;,
- &apos;Japanese_Fusion&apos;,
- &apos;jewish&apos;,
- &apos;northern_chinese&apos;,
- &apos;Twists&apos;,
- &apos;Chinese&apos;,
- &apos;burger,_hot_dogs&apos;,
- &apos;pizza,_burger,_american&apos;,
- &apos;Upscale_comfort_food&apos;,
- &apos;Upscale_Comfort_Food&apos;,
- &apos;smoothies&apos;,
- &apos;Korean_BBQ&apos;,
- &apos;chinese,seafood&apos;,
- &apos;taco&apos;,
- &apos;cajun&apos;,
- &apos;steakhouse,_italian,_mediterranean&apos;,
- &apos;3&apos;,
- &apos;burger;chicken&apos;,
- &apos;seafood,_Dim_sum,_Cantonese&apos;,
- &apos;bar&apos;,
- &apos;Juice_Smoothie&apos;,
- &apos;Fried_Chicken&apos;,
- &apos;Fast-Food&apos;,
- &apos;Southeast_Asian&apos;,
- &apos;south_african&apos;,
- &apos;BBQ&apos;,
- &apos;Cajun-Creole&apos;,
- &apos;burger_mexican_breakfast&apos;,
- &apos;filipino&apos;]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Count-Number-of-Coffee-Shops">Count Number of Coffee Shops<a class="anchor-link" href="#Count-Number-of-Coffee-Shops">&#182;</a></h3><p>Reading through the list I realized that I am actually very curious about the coffee shops in Los Angeles. Google Maps returns many many results, as does Yelp, so I would like to see if that's reflected here as well</p>
+<h2 id="Inspecting-some-nodes-in-greater-detail">Inspecting some nodes in greater detail<a class="anchor-link" href="#Inspecting-some-nodes-in-greater-detail">&#182;</a></h2><p>Random documents will be selected to for manual inspection to understand the OSM structure in practice.</p>
 
 </div>
 </div>
@@ -903,7 +210,15 @@ A verification of the postcodes was made using MongoDB using the following query
 <div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&quot;cuisine&quot;</span><span class="p">:{</span><span class="s">&quot;$regex&quot;</span><span class="p">:</span> <span class="s">u&quot;.*coffee.*&quot;</span><span class="p">}})</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span class="c">#Get Number of document</span>
+<span class="n">num_documents</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+<span class="c">#Get random list</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">random_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">num_documents</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="n">random_list</span>
 </pre></div>
 
 </div>
@@ -918,7 +233,16 @@ A verification of the postcodes was made using MongoDB using the following query
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>174</pre>
+<pre>[474387,
+ 768268,
+ 711957,
+ 3028769,
+ 1418376,
+ 5618105,
+ 2584835,
+ 2110433,
+ 5083028,
+ 1780220]</pre>
 </div>
 
 </div>
@@ -926,27 +250,17 @@ A verification of the postcodes was made using MongoDB using the following query
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>For these coffee shops I would like to see how many users submitted entries</p>
-
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">aggregate</span><span class="p">([{</span><span class="s">&quot;$match&quot;</span><span class="p">:{</span><span class="s">&quot;cuisine&quot;</span><span class="p">:{</span><span class="s">&quot;$regex&quot;</span><span class="p">:</span> <span class="s">u&quot;.*coffee.*&quot;</span><span class="p">}}},</span>
-                         <span class="p">{</span><span class="s">&quot;$group&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&quot;_id&quot;</span><span class="p">:</span><span class="s">&quot;$created.user&quot;</span><span class="p">,</span> <span class="s">&quot;contributions&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&quot;$sum&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}}},</span>
-                         <span class="p">{</span><span class="s">&quot;$sort&quot;</span><span class="p">:{</span><span class="s">&quot;contributions&quot;</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">}},</span>
-                         <span class="p">{</span><span class="s">&quot;$limit&quot;</span><span class="p">:</span><span class="mi">20</span><span class="p">}</span>
-                         <span class="p">]))</span>
+<div class=" highlight hl-ipython3"><pre><span class="kn">import</span> <span class="nn">pprint</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">document_num</span> <span class="ow">in</span> <span class="n">random_list</span><span class="p">:</span>
+    <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">document_num</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -957,30 +271,362 @@ A verification of the postcodes was made using MongoDB using the following query
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>{&apos;_id&apos;: ObjectId(&apos;5666f24db854b14d56c2a8bb&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;3484407&apos;,
+             &apos;timestamp&apos;: &apos;2009-12-29T20:07:33Z&apos;,
+             &apos;uid&apos;: &apos;147510&apos;,
+             &apos;user&apos;: &apos;woodpeck_fixbot&apos;,
+             &apos;version&apos;: &apos;2&apos;},
+ &apos;id&apos;: &apos;95445789&apos;,
+ &apos;node_refs&apos;: [],
+ &apos;pos&apos;: [34.312752, -118.852562],
+ &apos;type&apos;: &apos;node&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f253b854b14d56c724b4&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;12753187&apos;,
+             &apos;timestamp&apos;: &apos;2012-08-16T17:16:32Z&apos;,
+             &apos;uid&apos;: &apos;53073&apos;,
+             &apos;user&apos;: &apos;Aaron Lidman&apos;,
+             &apos;version&apos;: &apos;5&apos;},
+ &apos;id&apos;: &apos;122759371&apos;,
+ &apos;node_refs&apos;: [],
+ &apos;pos&apos;: [33.8271577, -117.7824221],
+ &apos;type&apos;: &apos;node&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f252b854b14d56c648bd&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;15790934&apos;,
+             &apos;timestamp&apos;: &apos;2013-04-19T23:17:54Z&apos;,
+             &apos;uid&apos;: &apos;53073&apos;,
+             &apos;user&apos;: &apos;Aaron Lidman&apos;,
+             &apos;version&apos;: &apos;4&apos;},
+ &apos;id&apos;: &apos;122627522&apos;,
+ &apos;node_refs&apos;: [],
+ &apos;pos&apos;: [33.8392396, -117.7650139],
+ &apos;type&apos;: &apos;node&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f28cb854b14d56e9a2c9&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;11228780&apos;,
+             &apos;timestamp&apos;: &apos;2012-04-08T19:32:42Z&apos;,
+             &apos;uid&apos;: &apos;104962&apos;,
+             &apos;user&apos;: &apos;techlady&apos;,
+             &apos;version&apos;: &apos;1&apos;},
+ &apos;id&apos;: &apos;1707559662&apos;,
+ &apos;node_refs&apos;: [],
+ &apos;pos&apos;: [34.1115691, -118.3383884],
+ &apos;type&apos;: &apos;node&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f264b854b14d56d11030&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;2430622&apos;,
+             &apos;timestamp&apos;: &apos;2009-09-09T23:09:58Z&apos;,
+             &apos;uid&apos;: &apos;129203&apos;,
+             &apos;user&apos;: &apos;Tangent_&apos;,
+             &apos;version&apos;: &apos;1&apos;},
+ &apos;id&apos;: &apos;491629390&apos;,
+ &apos;node_refs&apos;: [],
+ &apos;pos&apos;: [33.7174371, -116.9982093],
+ &apos;type&apos;: &apos;node&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f2d5b854b14d56112561&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;10530553&apos;,
+             &apos;timestamp&apos;: &apos;2012-01-29T16:59:59Z&apos;,
+             &apos;uid&apos;: &apos;38487&apos;,
+             &apos;user&apos;: &apos;jumbanho&apos;,
+             &apos;version&apos;: &apos;2&apos;},
+ &apos;gnis:fcode&apos;: &apos;46003&apos;,
+ &apos;gnis:ftype&apos;: &apos;StreamRiver&apos;,
+ &apos;id&apos;: &apos;80228577&apos;,
+ &apos;intermittent&apos;: &apos;yes&apos;,
+ &apos;nhd:com_id&apos;: &apos;26486807&apos;,
+ &apos;nhd:fdate&apos;: &apos;Tue Jul 03 00:00:00 PDT 2001&apos;,
+ &apos;nhd:reach_code&apos;: &apos;18070101000576&apos;,
+ &apos;node_refs&apos;: [&apos;936197895&apos;,
+               &apos;936269864&apos;,
+               &apos;936313675&apos;,
+               &apos;936283340&apos;,
+               &apos;936184677&apos;,
+               &apos;936251648&apos;,
+               &apos;936308367&apos;,
+               &apos;936226909&apos;,
+               &apos;936294202&apos;,
+               &apos;936203884&apos;,
+               &apos;936276115&apos;,
+               &apos;936289476&apos;,
+               &apos;936195090&apos;,
+               &apos;936266588&apos;,
+               &apos;936312692&apos;,
+               &apos;936235130&apos;,
+               &apos;936301513&apos;,
+               &apos;936214649&apos;,
+               &apos;936287017&apos;,
+               &apos;936224369&apos;,
+               &apos;936292928&apos;,
+               &apos;936201134&apos;,
+               &apos;936273045&apos;,
+               &apos;936316133&apos;,
+               &apos;936240257&apos;,
+               &apos;936304206&apos;,
+               &apos;936219056&apos;,
+               &apos;936249351&apos;,
+               &apos;936307867&apos;,
+               &apos;936226025&apos;,
+               &apos;936293484&apos;,
+               &apos;936202608&apos;,
+               &apos;936274570&apos;,
+               &apos;936318120&apos;,
+               &apos;936241395&apos;,
+               &apos;936189216&apos;,
+               &apos;936257486&apos;,
+               &apos;936310582&apos;,
+               &apos;936229582&apos;,
+               &apos;936298202&apos;,
+               &apos;936208407&apos;,
+               &apos;936281980&apos;,
+               &apos;936183337&apos;,
+               &apos;936228670&apos;,
+               &apos;936297250&apos;,
+               &apos;936206856&apos;,
+               &apos;936279511&apos;,
+               &apos;936181902&apos;,
+               &apos;936246481&apos;],
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;source&apos;: &apos;NHD&apos;,
+ &apos;type&apos;: &apos;way&apos;,
+ &apos;waterway&apos;: &apos;stream&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f281b854b14d56e2dcab&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;29915658&apos;,
+             &apos;timestamp&apos;: &apos;2015-04-01T21:05:39Z&apos;,
+             &apos;uid&apos;: &apos;2512300&apos;,
+             &apos;user&apos;: &apos;samely&apos;,
+             &apos;version&apos;: &apos;3&apos;},
+ &apos;id&apos;: &apos;1324455069&apos;,
+ &apos;node_refs&apos;: [],
+ &apos;pos&apos;: [33.8444974, -117.2132336],
+ &apos;type&apos;: &apos;node&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f275b854b14d56db9f89&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;5940346&apos;,
+             &apos;timestamp&apos;: &apos;2010-10-02T23:11:15Z&apos;,
+             &apos;uid&apos;: &apos;55774&apos;,
+             &apos;user&apos;: &apos;nmixter&apos;,
+             &apos;version&apos;: &apos;1&apos;},
+ &apos;id&apos;: &apos;935930666&apos;,
+ &apos;node_refs&apos;: [],
+ &apos;pos&apos;: [34.4478669, -118.3220793],
+ &apos;type&apos;: &apos;node&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f2c1b854b14d5608fb3c&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;33298514&apos;,
+             &apos;timestamp&apos;: &apos;2015-08-12T19:24:37Z&apos;,
+             &apos;uid&apos;: &apos;1240849&apos;,
+             &apos;user&apos;: &apos;ediyes&apos;,
+             &apos;version&apos;: &apos;1&apos;},
+ &apos;id&apos;: &apos;3693975119&apos;,
+ &apos;node_refs&apos;: [],
+ &apos;pos&apos;: [34.0172724, -118.0278861],
+ &apos;type&apos;: &apos;node&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f26db854b14d56d695a4&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;7961223&apos;,
+             &apos;timestamp&apos;: &apos;2011-04-25T09:46:10Z&apos;,
+             &apos;uid&apos;: &apos;82317&apos;,
+             &apos;user&apos;: &apos;AM909&apos;,
+             &apos;version&apos;: &apos;2&apos;},
+ &apos;id&apos;: &apos;834889167&apos;,
+ &apos;node_refs&apos;: [],
+ &apos;pos&apos;: [33.6022759, -117.1325292],
+ &apos;type&apos;: &apos;node&apos;}
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Most of these results are fairly boring. The node just tells us is position and when it was created. As is such I'd like to take a look at distribution for the length of records from the LA OSM file.</p>
+<h3 id="Pymongo-Limitation">Pymongo Limitation<a class="anchor-link" href="#Pymongo-Limitation">&#182;</a></h3><p>This actually would have been much easier if I was using the MongoDB terminal client. Pymongo is notably missing the forEach method which allows for a javascript style query which has great flexbility when working with the objects. However it eventually works out as we will be using the robust methods in Pandas to provide a deeper analysis of distribution of document lengths</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">document_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+    <span class="n">document_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">document</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">document</span><span class="p">)])</span>
+    
+<span class="n">document_lengths</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[{&apos;_id&apos;: &apos;Brian@Brea&apos;, &apos;contributions&apos;: 19},
- {&apos;_id&apos;: &apos;andrewpmk&apos;, &apos;contributions&apos;: 7},
- {&apos;_id&apos;: &apos;ponzu&apos;, &apos;contributions&apos;: 7},
- {&apos;_id&apos;: &apos;kisaa&apos;, &apos;contributions&apos;: 7},
- {&apos;_id&apos;: &apos;Clarke22&apos;, &apos;contributions&apos;: 6},
- {&apos;_id&apos;: &apos;youngbasedallah&apos;, &apos;contributions&apos;: 4},
- {&apos;_id&apos;: &apos;DMaximus&apos;, &apos;contributions&apos;: 4},
- {&apos;_id&apos;: &apos;michael_kirk&apos;, &apos;contributions&apos;: 3},
- {&apos;_id&apos;: &apos;freewillisanillusion&apos;, &apos;contributions&apos;: 3},
- {&apos;_id&apos;: &apos;kdano&apos;, &apos;contributions&apos;: 3},
- {&apos;_id&apos;: &apos;bondah&apos;, &apos;contributions&apos;: 3},
- {&apos;_id&apos;: &apos;Oleg Shalaev&apos;, &apos;contributions&apos;: 3},
- {&apos;_id&apos;: &apos;release_candidate&apos;, &apos;contributions&apos;: 3},
- {&apos;_id&apos;: &apos;thevirginian&apos;, &apos;contributions&apos;: 3},
- {&apos;_id&apos;: &apos;StellanL&apos;, &apos;contributions&apos;: 3},
- {&apos;_id&apos;: &apos;jgpacker&apos;, &apos;contributions&apos;: 3},
- {&apos;_id&apos;: &apos;sankeytm&apos;, &apos;contributions&apos;: 2},
- {&apos;_id&apos;: &apos;palewire&apos;, &apos;contributions&apos;: 2},
- {&apos;_id&apos;: &apos;pverik&apos;, &apos;contributions&apos;: 2},
- {&apos;_id&apos;: &apos;Peejster&apos;, &apos;contributions&apos;: 2}]</pre>
+<pre>[[&apos;653661&apos;, 7], [&apos;653678&apos;, 7], [&apos;653688&apos;, 7], [&apos;653689&apos;, 7], [&apos;653690&apos;, 7]]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">document_lengths</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="s">&quot;Length&quot;</span><span class="p">])</span>
+<span class="n">df</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[27]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(5953757, 2)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[34]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>Length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>653661</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>653678</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>653688</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>653689</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>653690</td>
+      <td>7</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="c">#del document_lengths</span>
+<span class="n">df</span><span class="p">[</span><span class="s">&quot;Length&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>count    5953757.000000
+mean           7.625952
+std            2.237075
+min            7.000000
+25%            7.000000
+50%            7.000000
+75%            7.000000
+max           46.000000
+Name: Length, dtype: float64</pre>
 </div>
 
 </div>
@@ -994,14 +640,667 @@ A verification of the postcodes was made using MongoDB using the following query
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Appendix">Appendix<a class="anchor-link" href="#Appendix">&#182;</a></h1><h2 id="Lesson-6-Exercises">Lesson 6 Exercises<a class="anchor-link" href="#Lesson-6-Exercises">&#182;</a></h2><p>All exercises are located in the programs folder. Modifications and extra functions outside of the required exercises are included for use with the LA OSM file. Additional modules exist for data munging the LA OSM file before conversion</p>
-<h2 id="Reference">Reference<a class="anchor-link" href="#Reference">&#182;</a></h2><p>Map Source - <a href="https://mapzen.com/data/metro-extracts">https://mapzen.com/data/metro-extracts</a><br>
-MongoDB Manual - <a href="https://docs.mongodb.org/manual/">https://docs.mongodb.org/manual/</a><br>
-FourSquare and OSM - <a href="https://www.mapbox.com/blog/connecting-foursquare-openstreetmap/">https://www.mapbox.com/blog/connecting-foursquare-openstreetmap/</a><br>
-Los Angeles County Department of Public Health - <a href="https://ehservices.publichealth.lacounty.gov/ezsearch">https://ehservices.publichealth.lacounty.gov/ezsearch</a></p>
+<p>The majority of nodes have 7 values, at least over 75%. This is consistenet with what we saw above. Checking to see how many have above seven values.</p>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s">&quot;Length&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">7</span> <span class="p">,</span><span class="s">&quot;Length&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[33]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>count    839765.000000
+mean         11.437871
+std           4.308606
+min           8.000000
+25%           8.000000
+50%           9.000000
+75%          15.000000
+max          46.000000
+Name: Length, dtype: float64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's get random items from the MongoDB database that have items over 7. Since I iterated over the entire MongoDB file each dataframe row should correspond to it's matching instance in MongoDB.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[56]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">document_num</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s">&quot;Length&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">9</span> <span class="p">,</span><span class="s">&quot;Length&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">document_num</span><span class="p">)])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>{&apos;_id&apos;: ObjectId(&apos;5666f2d3b854b14d56108edd&apos;),
+ &apos;access&apos;: &apos;private&apos;,
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;3286993&apos;,
+             &apos;timestamp&apos;: &apos;2009-12-04T09:47:44Z&apos;,
+             &apos;uid&apos;: &apos;82317&apos;,
+             &apos;user&apos;: &apos;AM909&apos;,
+             &apos;version&apos;: &apos;1&apos;},
+ &apos;highway&apos;: &apos;service&apos;,
+ &apos;id&apos;: &apos;45545897&apos;,
+ &apos;node_refs&apos;: [&apos;580751571&apos;, &apos;580751626&apos;],
+ &apos;oneway&apos;: &apos;yes&apos;,
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;source&apos;: &apos;survey;image;usgs_imagery&apos;,
+ &apos;source_ref&apos;: &apos;AM909_DSCQ1192&apos;,
+ &apos;type&apos;: &apos;way&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f2d8b854b14d56126200&apos;),
+ &apos;address&apos;: {},
+ &apos;building&apos;: &apos;yes&apos;,
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;11328457&apos;,
+             &apos;timestamp&apos;: &apos;2012-04-17T01:25:42Z&apos;,
+             &apos;uid&apos;: &apos;313196&apos;,
+             &apos;user&apos;: &apos;The Temecula Mapper&apos;,
+             &apos;version&apos;: &apos;1&apos;},
+ &apos;id&apos;: &apos;159934214&apos;,
+ &apos;node_refs&apos;: [&apos;1719987667&apos;,
+               &apos;1719979329&apos;,
+               &apos;1719979328&apos;,
+               &apos;1719987666&apos;,
+               &apos;1719987667&apos;],
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;source&apos;: &apos;bing_imagery&apos;,
+ &apos;type&apos;: &apos;way&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f2d5b854b14d561156ac&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;7223529&apos;,
+             &apos;timestamp&apos;: &apos;2011-02-08T06:01:09Z&apos;,
+             &apos;uid&apos;: &apos;82317&apos;,
+             &apos;user&apos;: &apos;AM909&apos;,
+             &apos;version&apos;: &apos;1&apos;},
+ &apos;highway&apos;: &apos;service&apos;,
+ &apos;id&apos;: &apos;98686952&apos;,
+ &apos;node_refs&apos;: [&apos;1141755420&apos;,
+               &apos;1141754907&apos;,
+               &apos;1141755194&apos;,
+               &apos;1141755463&apos;,
+               &apos;1141755045&apos;,
+               &apos;1141755508&apos;],
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;service&apos;: &apos;parking_aisle&apos;,
+ &apos;source&apos;: &apos;bing_imagery_0.06m_200701&apos;,
+ &apos;type&apos;: &apos;way&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f2d7b854b14d5611fe9e&apos;),
+ &apos;address&apos;: {},
+ &apos;building&apos;: &apos;yes&apos;,
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;9592636&apos;,
+             &apos;timestamp&apos;: &apos;2011-10-18T16:37:04Z&apos;,
+             &apos;uid&apos;: &apos;529264&apos;,
+             &apos;user&apos;: &apos;widesays&apos;,
+             &apos;version&apos;: &apos;1&apos;},
+ &apos;id&apos;: &apos;133752148&apos;,
+ &apos;node_refs&apos;: [&apos;1472144098&apos;,
+               &apos;1472144096&apos;,
+               &apos;1472144074&apos;,
+               &apos;1472144075&apos;,
+               &apos;1472144098&apos;],
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;type&apos;: &apos;way&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f2d5b854b14d5611268d&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;10508096&apos;,
+             &apos;timestamp&apos;: &apos;2012-01-27T04:29:07Z&apos;,
+             &apos;uid&apos;: &apos;38487&apos;,
+             &apos;user&apos;: &apos;jumbanho&apos;,
+             &apos;version&apos;: &apos;2&apos;},
+ &apos;gnis:fcode&apos;: &apos;46003&apos;,
+ &apos;gnis:ftype&apos;: &apos;StreamRiver&apos;,
+ &apos;id&apos;: &apos;80229906&apos;,
+ &apos;intermittent&apos;: &apos;yes&apos;,
+ &apos;nhd:com_id&apos;: &apos;26486843&apos;,
+ &apos;nhd:fdate&apos;: &apos;Tue Jul 03 00:00:00 PDT 2001&apos;,
+ &apos;nhd:reach_code&apos;: &apos;18070101000582&apos;,
+ &apos;node_refs&apos;: [&apos;936246355&apos;,
+               &apos;936307019&apos;,
+               &apos;936224037&apos;,
+               &apos;936292844&apos;,
+               &apos;936233781&apos;,
+               &apos;936300809&apos;,
+               &apos;936212775&apos;,
+               &apos;936286184&apos;,
+               &apos;936187213&apos;,
+               &apos;936254896&apos;,
+               &apos;936309464&apos;,
+               &apos;936228615&apos;,
+               &apos;936284488&apos;,
+               &apos;936185748&apos;,
+               &apos;936253065&apos;,
+               &apos;936308816&apos;,
+               &apos;936227637&apos;,
+               &apos;936295627&apos;,
+               &apos;936205224&apos;,
+               &apos;936277217&apos;,
+               &apos;936216691&apos;,
+               &apos;936287823&apos;,
+               &apos;936191767&apos;,
+               &apos;936261459&apos;,
+               &apos;936311618&apos;,
+               &apos;936231571&apos;,
+               &apos;936299318&apos;],
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;source&apos;: &apos;NHD&apos;,
+ &apos;type&apos;: &apos;way&apos;,
+ &apos;waterway&apos;: &apos;stream&apos;}
+
+{&apos;FIXME&apos;: &apos;Intermittently divided.&apos;,
+ &apos;_id&apos;: ObjectId(&apos;5666f2d9b854b14d5612714e&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;16478162&apos;,
+             &apos;timestamp&apos;: &apos;2013-06-09T08:32:52Z&apos;,
+             &apos;uid&apos;: &apos;1282393&apos;,
+             &apos;user&apos;: &apos;Reno Editor&apos;,
+             &apos;version&apos;: &apos;5&apos;},
+ &apos;hgv&apos;: &apos;designated&apos;,
+ &apos;hgv:national_network&apos;: &apos;terminal_access&apos;,
+ &apos;highway&apos;: &apos;primary&apos;,
+ &apos;id&apos;: &apos;164327783&apos;,
+ &apos;lanes&apos;: &apos;4&apos;,
+ &apos;name&apos;: &apos;5th Street&apos;,
+ &apos;node_refs&apos;: [&apos;54944666&apos;, &apos;2337906568&apos;, &apos;54859529&apos;],
+ &apos;old_ref&apos;: &apos;US 66 Business;SR 18&apos;,
+ &apos;old_ref:legislative&apos;: &apos;9&apos;,
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;ref&apos;: &apos;CA 66&apos;,
+ &apos;source&apos;: &apos;bing_imagery_0.06m_200706;SBCA&apos;,
+ &apos;source:hgv:national_network&apos;: &apos;Caltrans &apos;
+                                &apos;http://www.dot.ca.gov/hq/traffops/trucks/truckmap/&apos;,
+ &apos;source_ref&apos;: &apos;AM0134-I1&apos;,
+ &apos;tiger:cfcc&apos;: &apos;A41&apos;,
+ &apos;tiger:county&apos;: &apos;San Bernardino, CA&apos;,
+ &apos;tiger:name_base&apos;: &apos;5th&apos;,
+ &apos;tiger:name_base_1&apos;: &apos;Foothill&apos;,
+ &apos;tiger:name_base_2&apos;: &apos;State Highway 66&apos;,
+ &apos;tiger:name_direction_prefix&apos;: &apos;W&apos;,
+ &apos;tiger:name_direction_prefix_1&apos;: &apos;W&apos;,
+ &apos;tiger:name_type&apos;: &apos;St&apos;,
+ &apos;tiger:name_type_1&apos;: &apos;Blvd&apos;,
+ &apos;tiger:zip_left&apos;: &apos;92410&apos;,
+ &apos;tiger:zip_right&apos;: &apos;92401&apos;,
+ &apos;type&apos;: &apos;way&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f2d0b854b14d560f9643&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;13124176&apos;,
+             &apos;timestamp&apos;: &apos;2012-09-15T21:59:11Z&apos;,
+             &apos;uid&apos;: &apos;28145&apos;,
+             &apos;user&apos;: &apos;amillar&apos;,
+             &apos;version&apos;: &apos;5&apos;},
+ &apos;highway&apos;: &apos;residential&apos;,
+ &apos;id&apos;: &apos;13389843&apos;,
+ &apos;name&apos;: &apos;Goodhart Avenue&apos;,
+ &apos;node_refs&apos;: [&apos;123251632&apos;, &apos;1916320557&apos;, &apos;1916320555&apos;, &apos;122952365&apos;],
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;tiger:cfcc&apos;: &apos;A41&apos;,
+ &apos;tiger:county&apos;: &apos;Los Angeles, CA&apos;,
+ &apos;tiger:name_base&apos;: &apos;Goodhart&apos;,
+ &apos;tiger:name_type&apos;: &apos;Ave&apos;,
+ &apos;tiger:separated&apos;: &apos;no&apos;,
+ &apos;tiger:source&apos;: &apos;tiger_import_dch_v0.6_20070809&apos;,
+ &apos;tiger:tlid&apos;: &apos;141652292&apos;,
+ &apos;tiger:zip_left&apos;: &apos;90601&apos;,
+ &apos;tiger:zip_right&apos;: &apos;90601&apos;,
+ &apos;type&apos;: &apos;way&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f2d5b854b14d56112ba9&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;10257668&apos;,
+             &apos;timestamp&apos;: &apos;2011-12-31T22:47:54Z&apos;,
+             &apos;uid&apos;: &apos;313196&apos;,
+             &apos;user&apos;: &apos;The Temecula Mapper&apos;,
+             &apos;version&apos;: &apos;2&apos;},
+ &apos;id&apos;: &apos;81606417&apos;,
+ &apos;leisure&apos;: &apos;playground&apos;,
+ &apos;node_refs&apos;: [&apos;951084685&apos;,
+               &apos;951084690&apos;,
+               &apos;951084692&apos;,
+               &apos;951084695&apos;,
+               &apos;951084702&apos;,
+               &apos;951084706&apos;,
+               &apos;951084707&apos;,
+               &apos;951084708&apos;,
+               &apos;951084709&apos;,
+               &apos;951084711&apos;,
+               &apos;951084714&apos;,
+               &apos;951084716&apos;,
+               &apos;951084719&apos;,
+               &apos;951084721&apos;,
+               &apos;951084685&apos;],
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;source&apos;: &apos;bing_imagery&apos;,
+ &apos;type&apos;: &apos;way&apos;}
+
+{&apos;_id&apos;: ObjectId(&apos;5666f2ccb854b14d560e6a0f&apos;),
+ &apos;address&apos;: {},
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;4248199&apos;,
+             &apos;timestamp&apos;: &apos;2010-03-27T19:27:27Z&apos;,
+             &apos;uid&apos;: &apos;20587&apos;,
+             &apos;user&apos;: &apos;balrog-kun&apos;,
+             &apos;version&apos;: &apos;2&apos;},
+ &apos;highway&apos;: &apos;residential&apos;,
+ &apos;id&apos;: &apos;10735535&apos;,
+ &apos;name&apos;: &apos;Thistlegate Road&apos;,
+ &apos;node_refs&apos;: [&apos;95550970&apos;,
+               &apos;95550971&apos;,
+               &apos;95550972&apos;,
+               &apos;95550973&apos;,
+               &apos;95550974&apos;,
+               &apos;95550975&apos;,
+               &apos;95524726&apos;,
+               &apos;95550976&apos;,
+               &apos;95550977&apos;,
+               &apos;95550978&apos;,
+               &apos;95550979&apos;,
+               &apos;95550980&apos;,
+               &apos;95550981&apos;,
+               &apos;95550982&apos;,
+               &apos;95550983&apos;],
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;tiger:cfcc&apos;: &apos;A41&apos;,
+ &apos;tiger:county&apos;: &apos;Ventura, CA&apos;,
+ &apos;tiger:name_base&apos;: &apos;Thistlegate&apos;,
+ &apos;tiger:name_type&apos;: &apos;Rd&apos;,
+ &apos;tiger:reviewed&apos;: &apos;no&apos;,
+ &apos;tiger:separated&apos;: &apos;no&apos;,
+ &apos;tiger:source&apos;: &apos;tiger_import_dch_v0.6_20070809&apos;,
+ &apos;tiger:tlid&apos;: &apos;110043088:110048273:110019766:110019767&apos;,
+ &apos;tiger:zip_left&apos;: &apos;91377&apos;,
+ &apos;tiger:zip_right&apos;: &apos;91377&apos;,
+ &apos;type&apos;: &apos;way&apos;}
+
+{&apos;AIN&apos;: &apos;5539034002&apos;,
+ &apos;AREA&apos;: &apos;0.0&apos;,
+ &apos;BLD_ID&apos;: &apos;474730851480&apos;,
+ &apos;CODE&apos;: &apos;Building&apos;,
+ &apos;DATE_&apos;: &apos;2008&apos;,
+ &apos;ELEV&apos;: &apos;333.01&apos;,
+ &apos;HEIGHT&apos;: &apos;22.54&apos;,
+ &apos;SOURCE&apos;: &apos;LARIAC2&apos;,
+ &apos;Shape_Area&apos;: &apos;26.3743485568&apos;,
+ &apos;Shape_Leng&apos;: &apos;23.7130076906&apos;,
+ &apos;_id&apos;: ObjectId(&apos;5666f2e0b854b14d5615770d&apos;),
+ &apos;address&apos;: {},
+ &apos;building&apos;: &apos;yes&apos;,
+ &apos;created&apos;: {&apos;changeset&apos;: &apos;32572928&apos;,
+             &apos;timestamp&apos;: &apos;2015-07-12T00:57:25Z&apos;,
+             &apos;uid&apos;: &apos;3049136&apos;,
+             &apos;user&apos;: &apos;Jon Schleuss&apos;,
+             &apos;version&apos;: &apos;1&apos;},
+ &apos;id&apos;: &apos;360082959&apos;,
+ &apos;node_refs&apos;: [&apos;3646831526&apos;,
+               &apos;3646831496&apos;,
+               &apos;3646831494&apos;,
+               &apos;3646831527&apos;,
+               &apos;3646831526&apos;],
+ &apos;pos&apos;: [&apos;Lat&apos;, &apos;Lon&apos;],
+ &apos;type&apos;: &apos;way&apos;}
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Again nothing stands out here. Let's take a look at the keys themselves</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[57]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[57]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>dict_keys([&apos;type&apos;, &apos;address&apos;, &apos;node_refs&apos;, &apos;pos&apos;, &apos;_id&apos;, &apos;created&apos;, &apos;id&apos;])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[80]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
+<span class="n">tag_count</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">tag_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="n">tag_count</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+=</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tag_count</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>   
+
+<span class="n">df_keycount</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">tag_count</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[81]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">df_keycount</span><span class="o">.</span><span class="n">head</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[81]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>3dr:type       1
+4wd_only       3
+AIN         9713
+ALAND        332
+APN           49
+dtype: int64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[82]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">df_keycount</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">&quot;Attributes.csv&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[84]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">df_keycount</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[84]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>count       1707.000000
+mean       26598.169303
+std       380915.788686
+min            1.000000
+25%            1.000000
+50%            5.000000
+75%           69.000000
+max      5953758.000000
+dtype: float64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The majority of tags are used less than 5 times. When looking through the tag data manually it is notable that some tags are essentially the same thing. For instance <strong>Wifi_Access</strong> and <strong>Internet</strong> indicate whether internet access is available but with two tags it becomes more difficult to find all places that have internet access</p>
+<h3 id="Find-Zip-Codes">Find Zip Codes<a class="anchor-link" href="#Find-Zip-Codes">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&quot;address&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s">&quot;$gt&quot;</span><span class="p">:{}}})</span>
+<span class="n">tag_count</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">document</span><span class="p">[</span><span class="s">&quot;address&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">address</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">tag_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="n">tag_count</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+=</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tag_count</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">df_addresskeys</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">tag_count</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">df_addresskeys</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>zip                            1
+suburb                         1
+sitenumber                     1
+house                          1
+street2                        1
+complete                       1
+housenumber_4                  1
+housenumber_5                  1
+neighbourhood                  1
+housenumber_3                  1
+street_2                       2
+housenumber_2                  2
+streetnumber                   2
+inclusion                      2
+province                       3
+place                          3
+north_south                    4
+street_1                       4
+east_west                      4
+source_url                     5
+source                         5
+housenumber_1                  5
+door                           8
+flats                         14
+odd                           21
+even                          22
+floor                         49
+interpolation                 52
+suite                         64
+unit                          75
+full                         401
+housename                    441
+county                       925
+street_direction_prefix     1900
+state                      17619
+country                    22655
+postcode                   72260
+city                       72902
+housenumber                78430
+street                     78923
+dtype: int64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">la_map</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&quot;address&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s">&quot;$gt&quot;</span><span class="p">:{}}})</span>
+<span class="n">postcodes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">document</span><span class="p">[</span><span class="s">&quot;address&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">address</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">address</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;postcode&quot;</span><span class="p">):</span>
+            <span class="n">postcodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">address</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;postcode&quot;</span><span class="p">))</span>
+            
+<span class="n">df_postcodes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">postcodes</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="n">df_postcodes</span><span class="p">[</span><span class="o">~</span><span class="n">df_postcodes</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s">r&quot;\d+-?\d+&quot;</span><span class="p">)]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[44]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>17998     Disneyland
+18000     Disneyland
+18086     Disneyland
+18377     Disneyland
+18378     Disneyland
+19624    Sunland, CA
+19684             CA
+19696             ca
+55906            SCV
+65465     Disneyland
+65713     Disneyland
+69748     Disneyland
+71966     Disneyland
+dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
     </div>
   </div>
