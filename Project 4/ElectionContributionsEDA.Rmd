@@ -1,0 +1,552 @@
+Differential Analysis of State Donations by Ravin Kumar
+========================================================
+# Abstract
+At time of writing it is November 2015 and the 2016 election year is only
+months away. Since there is no incumbent both parties are running
+multiple candidates. As a result my curiosity in way candidates fund their
+campaigns is higher than usual.
+
+The Federal Election Commission requires that candidates publish details of the
+contributions publically. The dataset holds numerous interesting pieces
+of information, including contribution amount, donor size code, time of
+donation etc. I chose to analyze the contributions from California and
+Wisconsin only. This is an arbitrary choice, made largely because at
+different points in time I have been registered to vote in each state.
+
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width=10, fig.height=6, fig.path='Figs/',
+	echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(scales)
+```
+```{r cache= TRUE, Load_the_Data}
+# Need to specify columns due to trailing comma in files
+cols = c("cmte_id","cand_id","cand_nm","contbr_nm","contbr_city","contbr_st",
+         "contbr_zip","contbr_employer","contbr_occupation","contb_receipt_amt",
+         "contb_receipt_dt","receipt_desc","memo_cd","memo_text","form_tp",
+		 "file_num", "tran_id","election_tp", "donation_day")
+
+#Load and bind california dataframes
+ca_df_2012 = read.csv(unzip("data/P00000001-CA_2012.zip"),
+	col.names = cols, header = F, skip = 1)
+
+ca_df_2016 = read.csv(unzip("data/P00000001-CA_2016.zip"), col.names = cols,
+	header = F, skip = 1)
+
+ca_df = rbind(ca_df_2012, ca_df_2016)
+
+#Load and bind Wisconsin files
+wi_df_2012 = read.csv(unzip("data/P00000001-WI_2012.zip"), col.names = cols,
+	header = F, skip = 1)
+
+#Some trouble with letters in zip code
+#Removing occurence of letterL
+wi_df_2012["contbr_zip"] = gsub("L", "", wi_df_2012[["contbr_zip"]])
+
+#Load and bind 2016 data
+wi_df_2016 = read.csv(unzip("data/P00000001-WI_2016.zip"),
+	col.names = cols, header = F, skip = 1)
+
+wi_df = rbind(wi_df_2012, wi_df_2016)
+
+#Bind all into one dataframe
+df = rbind(ca_df, wi_df)
+
+#Election_tp columns looks like G2012, Splitting into type and year
+df["election_year"] = as.integer(substr(df[["election_tp"]], 2,5))
+df["election_type"] = substr(df[["election_tp"]], 0,1)
+
+#Convert Contribution receipt to date
+df["contb_receipt_dt"] = dmy(df[["contb_receipt_dt"]])
+
+#Remove all objects except final df
+rm(list=setdiff(ls(), "df"))
+```
+
+# Data Munging
+Double checking columns of interest to ensure everything looks ok
+```{r Additional Data Munging}
+table(df["election_year"], exclude = F)
+
+#2102 is likely a a typo. Converting to 2012
+df[which(df["election_year"] == 2102), "election_year"] = 2012
+
+#Removing all values from 2008
+df = df[df["election_year"] != 2008,]
+
+#Check again to see that everything took place correctly
+table(df["election_year"], exclude = F)
+```
+There are still 168 null values in the year column. Let's take a closer look
+
+```{r null_Values}
+head(df[is.na(df["election_year"]),])
+summary(df[is.na(df["election_year"]),])
+```
+Seems like most of these are refunds. For now setting aside these nulls into
+their own dataframe for exploration later
+
+```{r null_split}
+df_null = df[is.na(df["election_year"]),]
+df = df[!is.na(df["election_year"]),]
+```
+Further exploration seems to show that the null values in the memo
+columns are represented as *.
+
+```{r find_na}
+#`table(df["memo_text"])
+table(df["memo_cd"])
+```
+The memo columns are of little interest at this moment so we'll continue on. 
+
+### Negative Values
+We except contributions to be positive, so were checking for negative
+values in the contribution
+```{r negative_values}
+head(df[df["contb_receipt_amt"] < 0,])
+df_negative = df[df["contb_receipt_amt"] <= 0,]
+df_negative = df_negative[order(df_negative[,"contb_receipt_amt"]),]
+
+refunds = df_negative[,"contb_receipt_amt"]
+
+#Filter for positive
+df = df[df["contb_receipt_amt"] > 0,]
+donations = df[,"contb_receipt_amt"]
+```
+
+Each refund actually negates a donation. To calculate the ratio then we take the
+number of refunds and divide it by the position donations less the refunds. This
+gives a ratio of refunds to true donations.
+```{r refund_ratio}
+
+#Refund Dollar Ratio
+sum(refunds)/(sum(donations) - sum(refunds))
+
+#Number of refunds vs donation ratio
+length(refunds)/(length(donations) -length(refunds))
+```
+In the case with California and Wisconsin the refunds are about 3% of the total
+donations by dollar, and about 1% by number. This suggests that the people
+donating large sums of money are the ones who tend to receive refunds. This
+analysis is flawed somewhat because it is difficult to tell if someone received
+a donation, and then a refund, and then donated again. Since they're both low
+numbers we'll separate the negative contribution amounts into another dataframe
+and continue our analysis with only the positive contributions.
+
+# Univariate Analysis
+```{r Receipt_Amounts}
+cont_box_plot = ggplot(df, aes(y=contb_receipt_amt, x="Contributions")) +
+  geom_boxplot()
+cont_box_plot
+```
+With a linear scale its clear that the range of donations is quite large, with 
+the top donors giving about 30,000 dollars. However with this scale its hard to
+tell what the majority of the population is doing, specially the interquartile 
+range and the median
+
+```{r Receipt_Amounts_Scaled}
+cont_box_plot + scale_y_log10()
+```
+It's a lot easier to see now. Looks like median of the donations is around 80 
+dollars and most of the donations are between 10 and a 100 dollars.
+
+  
+# Bivariate Plots Section
+```{r Initial_Exploration}
+temp_df = df %>% select(contbr_st, election_year, contb_receipt_amt) %>%
+                 group_by(contbr_st, election_year) %>%
+                 summarise(Number_of_Contributions = n(),
+                           Sum_of_Contributions = sum(contb_receipt_amt)
+                           )
+ggplot(temp_df, aes(x = as.factor(election_year), y = Number_of_Contributions,
+	fill = contbr_st )) + geom_bar(stat = "identity", position = "dodge") + 
+	ggtitle("Count of Contributions per state")
+
+ggplot(temp_df, aes(x = as.factor(election_year), y = Sum_of_Contributions,
+	fill = contbr_st )) + geom_bar(stat = "identity", position = "dodge") + 
+	ggtitle("Sum of Contributions per state in Dollars") +
+	scale_y_continuous(labels = dollar)
+```
+  
+It's no surprise that Calfornia far outpaces Wisconsin in both the 
+count and dollar value of contributions as California is much more 
+populous. For both graphs it would be desirable to show the 
+values as ratio of the populations. A quick Google search shows 
+that the population of Wisconsin at  2014 is around 5.7 million people. 
+For California it averages around 38.2 million. As there is no 2015 data, and 
+obviously no 2016 data. Looking back to 2012 the state population changed less 
+than 3% for each. As is such for simplicity we'll just the 2014 reported 
+population to normalize the data'
+
+```{r Population_ratio}
+population_ratio = function(x, contbr_st) {
+  # trace()
+  ca_population = 38000000
+  wi_population = 5700000
+  if (all(contbr_st == "CA")) {
+    return(x/ca_population)
+  }
+  if (all(contbr_st == "WI")) {
+    return(x/wi_population)
+  }
+}
+
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
+temp_df_population = temp_df %>% filter(election_year !=2018) %>% 
+	mutate(Ratio_of_Number_of_Contributions = population_ratio(Number_of_Contributions, contbr_st),
+	Ratio_of_Sum_of_Contributions = population_ratio(Sum_of_Contributions, contbr_st))
+
+ggplot(temp_df_population, aes(x = as.factor(election_year), 
+	y = Ratio_of_Number_of_Contributions , fill = contbr_st )) + 
+	geom_bar(stat = "identity", position = "dodge") + 
+	ggtitle("Population Ratio of Count of Contributions per state")
+
+ggplot(temp_df_population, aes(x = as.factor(election_year),
+	y = Ratio_of_Sum_of_Contributions, fill = contbr_st)) + 
+	geom_bar(stat = "identity", position = "dodge") + 
+	ggtitle("Population Ratio of Sum of Contributions per state in Dollars") + 
+	scale_y_continuous(labels = dollar)
+```
+Even after after accounting for the population it seems that people from 
+Wisconsin donated less per year, and also less people from Wisconsin 
+donated to political campaigns.
+
+```{r top_candidates_per_employer}
+temp_df = df %>% select(contbr_employer, contb_receipt_amt) %>% 
+	group_by(contbr_employer) %>%
+	summarise(total_receipts = sum(contb_receipt_amt)) %>%
+	top_n(n = 5)
+
+
+ggplot(temp_df, aes(x = as.factor(contbr_employer), y = total_receipts)) + 
+	geom_bar(stat = "identity") + 
+	ggtitle(" Sum of Contributions by Employer") + 
+	scale_y_continuous(labels = dollar)
+```
+Initially was expecting a list of company names to come up, but after looking 
+at the top 5 it's clear that these are general employment categories, instead 
+of specific employers. For instance this is why the categories of retired and 
+self employed come up as the highest contributors.
+
+```{r Histogram_of_Contributions}
+ggplot(df, aes(x = contb_receipt_amt)) + geom_histogram()
+```
+With a binwidth of 30 it's difficult to see the overall trend. Looks like most 
+people contributed in the first three bins. Scaling axes will provide a closer 
+look.
+
+```{r Histogram_of_Contributions_scale}
+ggplot(df, aes(x = contb_receipt_amt, fill = contbr_st)) + geom_histogram() + 
+	scale_x_log10()
+```
+Scaling and adding color gives us some more detail. Seems like most people 
+contribute between 10 and 100 dollars. This matches our boxplot from the 
+earlier analysis when we were not distinguishing between the two states.
+
+```{r density_plots}
+ggplot(df, aes(x = contb_receipt_amt, color = contbr_st)) + 
+	geom_density(size = 1) + scale_x_log10()
+```
+The waviness is very apparent now. It seems that most people donate round 
+figures, most likely increments of five. Let's quickly test this theory
+
+```{r Donations}
+five = data.frame(df["contb_receipt_amt"] %% 5 == 0)
+
+ggplot(five, aes(x=contb_receipt_amt)) + geom_bar()
+```
+Overwhelmingly this is the case. Based off of personal experience donations are 
+usually round numbers with 5 being the lowest divisor.
+
+```{r echo=FALSE, Sum_of_Donations}
+#Bin by week
+df["donation_bin"] = floor_date(df[,"contb_receipt_dt"], 'week')
+
+temp_df = df %>% select(donation_bin, contb_receipt_amt) %>%
+                 group_by(donation_bin) %>%
+                 summarise(Number_of_Contributions = n(),
+                           Sum_of_Contributions = sum(contb_receipt_amt),
+                           Average_Contribution = mean(contb_receipt_amt)
+                          )
+average_df = temp_df
+ggplot(temp_df, aes(x=donation_bin, y = Sum_of_Contributions)) + geom_line() + 
+scale_y_continuous(labels = dollar) + 
+ggtitle("Dollar Value of contributions per bin") + 
+geom_vline(xintercept=as.numeric(dmy("6-11-12")), colour = 'red')
+```
+Another point of curiosity is how contributions trend over time. Plotting the sumb of contribution we can see a very interesting cycle. For the 2012 election we can see the sum of the donations starting low in 2011, then quickly rising until election day where they seem to completely cease. Between the end of 2012 until the start of 2015 there is almost not activity. However we can see the start of the trend again in 2015.
+```{r Number_of_Donations}
+ggplot(temp_df, aes(x=donation_bin, y = Number_of_Contributions)) + 
+geom_line() + ggtitle("Number of Contributions of contributions per bin")
+```
+Plotting the number of contributions shows a similar story. This curve however 
+is much smoother and looks moreso like an exponentional curve.
+
+```{r Average_Donation}
+ggplot(temp_df, aes(x=donation_bin, y = Average_Contribution)) + 
+geom_line() + scale_y_continuous(labels = dollar) + 
+ggtitle("Average Contribution over Time") + 
+geom_vline(xintercept=as.numeric(dmy("6-11-12")), colour = 'red')+ stat_smooth()
+```
+Also of interest is how the average contribution changes over time. It seems 
+like the average contribution is much higher earlier in the election year, and 
+as we move through the year the average contribution drops. While I didn't 
+expect this I suspect that early in the year rich donors are the majority of 
+contributors, but as we move through the year more and more people participate 
+driving the mean down.
+
+```{r Average_Donation_Stat`}
+ggplot(df, aes(x=donation_bin, y=contb_receipt_amt)) + stat_smooth()
+```
+Looking at just the smoothed function if instead of using weekely averages 
+instead use the contribution receipt amount over time. This plot also tells a 
+similar story, that the  donation value was high at the start of 2012 and has 
+dropped steadily through the election. Even at the start of the 2016 election 
+cycle though it looks like the donation amounts aren't quite as high as they 
+were in 2012
+
+
+# Multivariate Analysis
+```{r top_candidates_per_date}
+temp_df = df %>% select(cand_nm, contb_receipt_amt, contbr_st) %>% 
+group_by(cand_nm, contbr_st) %>% 
+summarise(total_receipts = sum(contb_receipt_amt)) %>% 
+group_by(contbr_st) %>% top_n(n = 5)
+
+
+ggplot(temp_df, 
+	aes(x = as.factor(cand_nm), y = total_receipts, fill = contbr_st)) + 
+	geom_bar(stat = "identity", position = "dodge") + 
+	ggtitle(" Sum of Contributions per State per Candidate in Dollars") + 
+	scale_y_continuous(labels = dollar)
+```
+As expected California contributes more overall. Also as expected Wisconsin 
+contributed more to Mitt Romney than Barack Obama. The states also had the same 
+pairings for top contributions to candidates, except for Jeb Bush and Scott 
+Walker. There's little surprise that Wisconsin prefers to contribute more 
+dollars to its governer Jeb Bush
+
+````{r Contributions_Per State_2012}
+temp_df = df %>% select(contb_receipt_dt, contb_receipt_amt,
+							contbr_st, election_year) %>%
+                 filter(election_year == 2012) %>%
+                 group_by(contb_receipt_dt, contbr_st) %>%
+                 summarise(Number_of_Contributions = n(),
+                           Sum_of_Contributions = sum(contb_receipt_amt)
+                 )
+                 
+ggplot(temp_df, aes(x=contb_receipt_dt, y = Number_of_Contributions,
+	color = contbr_st)) + geom_line() + 
+	ggtitle("Number contributions per day per state")
+```
+Focusing just on 2012 we can see exponentional growth leading up until the 
+election after which the donations precipitously drop. Roughly looking at 
+contributions between states donations from California seem to quickly grow 
+duirng the summer of the election, leading up to the election
+
+```{r Contributions_Per_Candidate}
+top_candidates = temp_df = df %>% select(cand_nm, contb_receipt_amt,
+									election_year) %>%
+					  filter(election_year == 2016) %>%
+					  group_by(cand_nm) %>%
+					  summarise(total_receipts = sum(contb_receipt_amt)) %>%
+					  top_n(n = 5)
+
+temp_df = df %>% select(contb_receipt_dt, contb_receipt_amt,
+					contbr_st, cand_nm, election_year) %>%
+                 mutate(year = year(df[,"contb_receipt_dt"]),
+				 month = month(df[,"contb_receipt_dt"])) %>%
+                 filter(election_year == 2016, year == 2015,
+				 cand_nm %in% top_candidates[["cand_nm"]]) %>%
+                 group_by(cand_nm, month) %>%
+                 summarise(Number_of_Contributions = n(),
+                           Sum_of_Contributions = sum(contb_receipt_amt)
+                 )
+
+cand_plot = ggplot(temp_df, aes(x=month, y = Sum_of_Contributions, 
+	color = cand_nm)) + geom_line(size = 1.2) + 
+	ggtitle("Sum of Contributions per Candidate for Top 5 in 2014")  + 
+	scale_y_continuous(labels = dollar)
+cand_plot
+
+```
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+
+p1 = ggplot(temp_df_population, aes(x = as.factor(election_year),
+	y = Ratio_of_Number_of_Contributions , fill = contbr_st )) + 
+	geom_bar(stat = "identity", position = "dodge") + 
+	ggtitle("Population Ratio \n of Count of Contributions \n as of 11/14/15") +
+	ylab("Number of Contributions per Person") + xlab("Election Year") + 
+	theme(legend.position="none")
+
+p2 = ggplot(temp_df_population, aes(x = as.factor(election_year),
+	y = Ratio_of_Sum_of_Contributions, fill = contbr_st)) + 
+	geom_bar(stat = "identity", position = "dodge") + 
+	ggtitle("Population Ratio of Sum \n of Contributions in Dollars \n as of 11/14/15") +
+	scale_y_continuous(labels = dollar) +
+	ylab("Dollar Value of Contributions per Person") +
+	xlab("Election Year") + labs(fill = "State")
+
+multiplot(p1,p2, cols = 2)
+
+```
+  
+When comparing the campaign contributions between the states of California and 
+Wisconsin an obvious question is which state contributes more, both financially 
+and by the numbers. A simple count or sum of contributions is relatively 
+meaningless however due to the population differences between the states. 
+California is roughly 7 times more populous than Wisconsin so as expected 
+more dollars and contributions come from California. However even after 
+normalizing for population it seems that more Californians donate to campaigns, 
+and the per person dollar contribution is higher. I'm not surprised that the 
+dollar contribution is higher between states as California has many more wealthy
+ people, but I am surprised that more Californians donate as a ratio of the 
+ population than Wisconsin. Wisconsin is a much older state with much more 
+ American history and families that have been American for multiple generations 
+ but for some reason it seems they're less involved in politics by this metric.
+
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+ggplot(average_df, aes(x=donation_bin, y = Average_Contribution)) +
+	geom_line() + 
+	scale_y_continuous(labels = dollar) + 
+	ggtitle("Average Contribution per week") + 
+	geom_vline(aes(xintercept=as.numeric(dmy("6-11-12")), 
+	colour = "Election Day", labels="2012 Election"), show_guide=TRUE) + 
+	stat_smooth() + ylab("Weekly Contribution Average") + xlab("Time") + 
+	labs(color='Legend')
+```
+
+An interesting relationship can be found when looking at the average 
+contributions over time. It seems that the first donations in the 2012 election 
+were quite large, and as the 2012 election season went on the average 
+contribution dropped. I suspect that as the election cycle went more middle or 
+lower class donors started participating, whereas earlier in the election 
+relatively richer folks were donating.
+
+Another interesting trend though is how the average weekly donations for the 
+2016 election is lower than those in 2012. Perhaps this can be attributed to 
+the type of race. 2012 was an incumbent race so the number of candidates was 
+much smaller. In 2016 both parties have numerous candidates running and perhaps
+ this dynamic means that this early in the election people are less inclined to
+ heavily back any one candidate.
+
+### Plot Three
+```{r echo=FALSE, Plot_Three, fig.width=12}
+cand_plot + ylab("Sum of Contributions") + xlab("Month") + labs(color = "Name")
+```
+
+This plot is interesting to me for those who are included, as well as those who
+ weren't. The most outspoken candidate, Donald Trump, doesn't show in thie plot
+ at all. However a much smaller candidate, Scott Walker, does. Additionally each
+ candidates plots look very different. I would have expected each candidates 
+ contributions to start low, and slowly rise, but in this graphic only Bernie 
+ Sanders follows this trend. Hillary Clinton's donations are erratic, starting 
+ very high then dropping, then rising again. Jeb Bush seems to get less 
+ donations from the two states over time. However Scott Walker sees a spike, 
+ only to have his donations drop off, likely has he withrew his candidacy 
+ soon after.
+
+
+# Reflection
+It is interesting how much a public dataset can reveal about the populations of
+ two states. By downloading each dataset and aggregating the information, 
+ numerous global trends could be observed. Some of them were unsurprising, 
+ such as Wisconsin being more Republican and donating to it's governer more 
+ than California, but others were surprising, such as California's larger 
+ share of political contributions.
+
+The public data initially seemed tidy and straightforward but numerous hidden 
+issues lurked in the data. This included zip codes that included characters in 
+their code, typo values for contribution years, and refunds. As is true of most 
+data projects a significant amount of time was needed to find and clear these 
+issues before proceeding.
+
+The subsequent analysis was interesting though. The dplyr package made it very 
+simple to aggregate the information in various ways to highlight trends. Passing
+ these summarised dataframes to ggplot made for quick visualizations.
+
+My biggest reason for picking this dataset though is that it is constantly 
+changing. I'll be rerunning this file at various points through the upcoming 
+year. It'll be interesting to see if I can predict any trends about candidates. 
+Would a declining contribution amount indicate that a candidate is about to 
+drop out? Or will the number of contributions predict which candidate will win
+ the primary in each respective state? I could also expand this to other states 
+ besides California and Wisconsin. It'll be interesting to see how the trends 
+ evolve and bestof all it'll be very easy to update these visualizations to stay
+ current.
+
+# Appendix
+## File Links
+http://www.fec.gov/disclosurep/pnational.do  
+ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-CA.zip  
+ftp://ftp.fec.gov/FEC/Presidential_Map/2012/P00000001/P00000001-WI.zip  
+ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-CA.zip  
+ftp://ftp.fec.gov/FEC/Presidential_Map/2016/P00000001/P00000001-WI.zip  
+
+#Project Rubric
+https://docs.google.com/document/d/1L2Wwofs6D8Crd0QLZ1-RxBHlVoBZ3mec2xWgxrmUs5I/pub?embedded=true
+
+#Examples
+https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html  
+https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html  
+https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html  
+
+#Dataset Reference
+ftp://ftp.fec.gov/FEC/Presidential_Map/2016/DATA_DICTIONARIES/CONTRIBUTOR_FORMAT.txt  
+https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true
