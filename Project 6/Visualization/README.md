@@ -2,24 +2,27 @@
 During the course of my work as an Industrial Engineer
 I'm frequently asked to identify potential areas of improvement.
 Luckily modern day factories collect enormous amounts of information
-regarding their operation.   
-This particular visualization was created from an initial dataset
-that spanned about 1.2 million rows. It has been summarized
-into the difference of averages from the baseline year of 2013.
+regarding their operation. This  visualization was created from an initial dataset
+that spanned about 1.2 million rows generated over the course of numerous years.
+Collapsing the data by grouping rows of summary statistics yielded
+interesting results, but with 500 lines it was still difficult to understand.
+This visualization served as a way for others in the organization to quickly
+identify trends of interest with little outside explanation in less than 5
+minutes, thereby allowing individuals to make better business decisions
+with limited time.
 
 
 ## Visualization Note
 This visualization was designed for employees in a particular company.
-As is such there is two downsides for the uninitiated viewer.
-Firstly the employees of the NOV plant will inherently understand
+As is such it is difficult for an uniniated viewer to gain the full context
+for two reasons.
+Firstly the employees of the organization will inherently understand
 some of the internal jargon, such as workcenters, without
-needing any extra information in the visualization
+needing any extra information in the visualization itself.
 Secondly the visualization has been completely stripped of proprietary
-information which unfortunately does make it more difficult to read
-and hinders it functionality somewhat.
+information which unfortunately does make it more difficult to read. This 
+was necessary however to show the visualization in this setting.
 
-For those curious of the full context a deeper explanation is provided in the 
-appendix.
 
 #Design
 This visualization stemmed from a need to understand how the business was
