@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>PlaceHolder Page</title>
+    
+    <!-- Bootstrap -->
+    <link href="lib/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+
+    </style>
+
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+        <h1>Internal Link to Document Database</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 text-center">
+        <h1 id="PartNumber"></h1>
+        </div>
+      </div>        
+
+      <div class="row">
+        <div class="col-lg-6 col-lg-offset-3 text-center">
+        <h3>In the production visualization this refers to the API for an internal document store
+            corresponding the part number matching the line. This was included so the user could easily
+            access all the information related to this part number with only one click.
+        <h3>
+        </div>
+      </div>
+      
+    
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="lib/js/bootstrap.min.js"></script>
+    <script>
+    var pn = window.location.hash.substr(1);
+    $("#PartNumber").append( "You're looking for Part Number " + pn);
+    </script>
+  </body>
+</html>
