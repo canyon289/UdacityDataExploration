@@ -174,6 +174,53 @@ Looking at the top contributors the results aren't surprising. All are
  Californian cities that have large populations. Although New York wasn't
  included on this list I would expect it too would have a
  similar amount of donations.
+ 
+```{r unique_cities_summary_chart}
+count_df = df %>% select(contbr_city) %>%
+           group_by(contbr_city) %>%
+           summarise(count = n())%>% 
+           arrange(desc(count))
+
+ggplot(count_df, aes( x=reorder(contbr_city,-count), y = count)) + 
+  geom_histogram(stat = 'identity')
+```
+Looking at the count of contributions per city we can see this is follows an
+ exponential function. Los Angeles contributes the most by far with
+ contributions falling quickly after that. This plot is a little hard
+ to read so we'll filter out cities that have less than 100 contributions
+
+```{r Unique_cities_100}
+count_df = count_df %>% filter(count > 100)
+
+ggplot(count_df, aes( x=reorder(contbr_city,-count), y = count)) +
+ geom_histogram(stat = 'identity')
+```
+The chart is much easier to read in this one. The trend is much more
+ clear that very few cities have more than 40000 contributors with
+ the vast majority having 20000 or less
+
+```{r zip_codes_summary_chart}
+count_df = df %>% select(contbr_zip) %>%
+           group_by(contbr_zip) %>%
+           summarise(count = n()) %>% 
+           arrange(desc(count))
+
+ggplot(count_df, aes( x=reorder(contbr_zip,-count), y = count)) +
+ geom_histogram(stat = 'identity')
+```
+We can see the same trend with zip code. However it once again is
+ difficult to tell the details at this scale.
+
+```{r}
+count_df = count_df %>% filter(count > 1000)
+
+ggplot(count_df, aes( x=reorder(contbr_zip,-count), y = count)) +
+ geom_histogram(stat = 'identity')
+```
+In this case the slope is much more smooth. This is likely because large
+ cities are composed of multiple zip codes so the contributions are
+ split up. Likewise smaller cities are grouped together.  
+Moving onto the contributions themselves.
 
 ```{r Receipt_Amounts}
 cont_box_plot = ggplot(df, aes(y=contb_receipt_amt, x="Contributions")) +
@@ -188,9 +235,14 @@ range and the median
 ```{r Receipt_Amounts_Scaled}
 cont_box_plot + scale_y_log10()
 ```
-It's a lot easier to see now. Looks like median of the donations is around 80 
+It's a lot easier to see now. Looks like median of the donations is around 60 
 dollars and most of the donations are between 10 and a 100 dollars.  
-  
+
+```{r Receipt_Amounts_Summary}
+summary(df["contb_receipt_amt"])
+```
+A quick check shows the median at 50 dollars and as expected very close to what we
+ can visually infer from the plot.
   
 The other relevant columns are explored in more detail below in the bivariate
  and multivariate sections.
@@ -353,7 +405,13 @@ scale_y_continuous(labels = dollar) +
 ggtitle("Dollar Value of contributions per bin") + 
 geom_vline(xintercept=as.numeric(dmy("6-11-12")), colour = 'red')
 ```
-Another point of curiosity is how contributions trend over time. Plotting the sumb of contribution we can see a very interesting cycle. For the 2012 election we can see the sum of the donations starting low in 2011, then quickly rising until election day where they seem to completely cease. Between the end of 2012 until the start of 2015 there is almost not activity. However we can see the start of the trend again in 2015.
+Another point of curiosity is how contributions trend over time. Plotting the sum
+ of contribution we can see a very interesting cycle. For the 2012 election we
+ can see the sum of the donations starting low in 2011, then quickly rising
+ until election day where they seem to completely cease. Between the end of
+ 2012 until the start of 2015 there is almost not activity. However we can
+ see the start of the trend again in 2015.
+ 
 ```{r Number_of_Donations}
 ggplot(temp_df, aes(x=donation_bin, y = Number_of_Contributions)) + 
 geom_line() + ggtitle("Number of Contributions of contributions per bin")
