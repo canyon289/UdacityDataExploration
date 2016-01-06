@@ -147,6 +147,34 @@ numbers we'll separate the negative contribution amounts into another dataframe
 and continue our analysis with only the positive contributions.
 
 # Univariate Analysis
+```{r Summary_Exploration}
+summary(df)
+```
+From the 19 columns are the fields are either categorical, an encoding, or human
+readable text.
+We will take a look at these further before exploring visualizations
+
+```{r Number_Unique_Candidates}
+unique(df[["cand_nm"]])
+```
+Looking at the names of the candidates it seems that there are only 35 people 
+that have registered their donations in the 2012 and 2016 elections from 
+California and Wisconsin. Due to the size of the population in California 
+I expect all major candidates to be included on this list.
+
+```{r unique_cities_structure}
+str(df["contbr_city"])
+```
+From both states only 3339 cities are listed. I would have expected more
+
+```{r unique_cities_summary}
+summary(df["contbr_city"])
+```
+Looking at the top contributors the results aren't surprising. All are
+ Californian cities that have large populations. Although New York wasn't
+ included on this list I would expect it too would have a
+ similar amount of donations.
+
 ```{r Receipt_Amounts}
 cont_box_plot = ggplot(df, aes(y=contb_receipt_amt, x="Contributions")) +
   geom_boxplot()
@@ -161,9 +189,12 @@ range and the median
 cont_box_plot + scale_y_log10()
 ```
 It's a lot easier to see now. Looks like median of the donations is around 80 
-dollars and most of the donations are between 10 and a 100 dollars.
-
+dollars and most of the donations are between 10 and a 100 dollars.  
   
+  
+The other relevant columns are explored in more detail below in the bivariate
+ and multivariate sections.
+ 
 # Bivariate Plots Section
 ```{r Initial_Exploration}
 temp_df = df %>% select(contbr_st, election_year, contb_receipt_amt) %>%
@@ -418,7 +449,15 @@ cand_plot = ggplot(temp_df, aes(x=month, y = Sum_of_Contributions,
 cand_plot
 
 ```
-
+This plot is very interseting as it shows an up to date sum of contributions of
+ the candidates over time. I'm fairly surprised by this plot, firstly
+ that Donald Trump isn't on the list at all, but also that Hilary's
+ contributions are far higher than any of the other candidates.
+ Another interesting trend is Jeb's Bush's declining contributions.
+ From speculation I am curious of this has anything to do with Donald Trump's
+ position in the rave. Conversely though it's also interesting that Bernie
+ Sanders contributions are increasing fairly consistently month over month.
+ This may be a good indicator of his popularity as he gains more notoriety.
 ------
 
 # Final Plots and Summary
