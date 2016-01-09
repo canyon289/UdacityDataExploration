@@ -16,7 +16,7 @@ different points in time I have been registered to vote in each state.
 
 ```{r global_options, include=FALSE}
 knitr::opts_chunk$set(fig.width=10, fig.height=6, fig.path='Figs/',
-	echo=FALSE, warning=FALSE, message=FALSE)
+	echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE, cache.path = 'cache/')
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
@@ -182,7 +182,7 @@ count_df = df %>% select(contbr_city) %>%
            arrange(desc(count))
 
 ggplot(count_df, aes( x=reorder(contbr_city,-count), y = count)) + 
-  geom_histogram(stat = 'identity')
+  geom_histogram(stat = 'identity') + theme(axis.text.x=element_blank(), axis.ticks.x = element_blank())
 ```
 Looking at the count of contributions per city we can see this is follows an
  exponential function. Los Angeles contributes the most by far with
@@ -193,7 +193,7 @@ Looking at the count of contributions per city we can see this is follows an
 count_df = count_df %>% filter(count > 100)
 
 ggplot(count_df, aes( x=reorder(contbr_city,-count), y = count)) +
- geom_histogram(stat = 'identity')
+ geom_histogram(stat = 'identity') + theme(axis.text.x=element_blank(), axis.ticks.x = element_blank())
 ```
 The chart is much easier to read in this one. The trend is much more
  clear that very few cities have more than 40000 contributors with
@@ -206,7 +206,7 @@ count_df = df %>% select(contbr_zip) %>%
            arrange(desc(count))
 
 ggplot(count_df, aes( x=reorder(contbr_zip,-count), y = count)) +
- geom_histogram(stat = 'identity')
+ geom_histogram(stat = 'identity') + theme(axis.text.x=element_blank(), axis.ticks.x = element_blank())
 ```
 We can see the same trend with zip code. However it once again is
  difficult to tell the details at this scale.
@@ -215,7 +215,7 @@ We can see the same trend with zip code. However it once again is
 count_df = count_df %>% filter(count > 1000)
 
 ggplot(count_df, aes( x=reorder(contbr_zip,-count), y = count)) +
- geom_histogram(stat = 'identity')
+ geom_histogram(stat = 'identity') + theme(axis.text.x=element_blank(), axis.ticks.x = element_blank())
 ```
 In this case the slope is much more smooth. This is likely because large
  cities are composed of multiple zip codes so the contributions are
@@ -233,10 +233,9 @@ tell what the majority of the population is doing, specially the interquartile
 range and the median
 
 ```{r Receipt_Amounts_Scaled}
-cont_box_plot + scale_y_log10()
+cont_box_plot + scale_y_log10(breaks = c(1, 10, 100, 1000,10000))
 ```
-It's a lot easier to see now. Looks like median of the donations is around 60 
-dollars and most of the donations are between 10 and a 100 dollars.  
+It's a lot easier to see now. Looks like most of the donations are between 10 and a 100 dollars.  
 
 ```{r Receipt_Amounts_Summary}
 summary(df["contb_receipt_amt"])
@@ -352,7 +351,7 @@ temp_df = df %>% select(contbr_employer, contb_receipt_amt) %>%
 ggplot(temp_df, aes(x = as.factor(contbr_employer), y = total_receipts)) + 
 	geom_bar(stat = "identity") + 
 	ggtitle(" Sum of Contributions by Employer") + 
-	scale_y_continuous(labels = dollar)
+	scale_y_continuous(labels = dollar) + theme(axis.text.x = element_text(size = 7))
 ```
 Initially was expecting a list of company names to come up, but after looking 
 at the top 5 it's clear that these are general employment categories, instead 
@@ -384,7 +383,7 @@ figures, most likely increments of five. Let's quickly test this theory
 ```{r Donations}
 five = data.frame(df["contb_receipt_amt"] %% 5 == 0)
 
-ggplot(five, aes(x=contb_receipt_amt)) + geom_bar()
+ggplot(five, aes(x=contb_receipt_amt)) + geom_bar() + xlab("Donation Value is a factor of 5")
 ```
 Overwhelmingly this is the case. Based off of personal experience donations are 
 usually round numbers with 5 being the lowest divisor.
@@ -586,8 +585,8 @@ much smaller. In 2016 both parties have numerous candidates running and perhaps
 ### Plot Three
 ```{r echo=FALSE, Plot_Three, fig.width=12}
 cand_plot + ylab("Sum of Contributions") + xlab("Month") + labs(color = "Name")
-```
 
+```
 This plot is interesting to me for those who are included, as well as those who
  weren't. The most outspoken candidate, Donald Trump, doesn't show in thie plot
  at all. However a much smaller candidate, Scott Walker, does. Additionally each
