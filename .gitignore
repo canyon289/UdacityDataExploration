@@ -45,7 +45,7 @@ Temporary Items
 *.bz2
 *los-angeles_california.osm
 *.ropeproject
-*.json
+*los-angeles_california.osm.json
 apikey.txt
 
 *cache/

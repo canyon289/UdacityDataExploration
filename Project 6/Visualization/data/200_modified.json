@@ -1,0 +1,978 @@
+{
+    "part_attr": {
+        "10449994-001": {
+            "desc": "Body;Jaw, Machined;Pipe Handling;PRS-8i",
+            "base_unit": 106.0
+        },
+        "10448126-001": {
+            "desc": "Manifold, Proprietary;Pressure Filter, Machining;Hydraulic Power Units;HP-45Q;Matl Aluminum",
+            "base_unit": 3.0
+        },
+        "10464939-001": {
+            "desc": "Rotating Link Adapter;Elevator, Assembly, Solid Body, PSL1, 650/750Ton;Custom tonne;API 8C PSL1 Qualified;No Certification",
+            "base_unit": 4.0
+        },
+        "10379952-001": {
+            "desc": "Body;Main, Machining;Top Drives;TDS-1000",
+            "base_unit": 68.5
+        },
+        "10360772-001": {
+            "desc": "Arm;Roller;Pipe Handling;PRS-5, PRS-4i",
+            "base_unit": 20.0
+        },
+        "10460287-001": {
+            "desc": "Case;Gear, Lower, Machining;Weldment;TDS-4H",
+            "base_unit": 20.0
+        },
+        "10481205-005": {
+            "desc": "Adapter, Proprietary;Link, 1000 Ton;Top Drives;PH-203",
+            "base_unit": 9.2
+        },
+        "10379935-001": {
+            "desc": "Adapter, Proprietary;Rotating Link, Machining, 400 Ton, Weldment;Top Drives;TDS-9SA",
+            "base_unit": 8.0
+        },
+        "10464492-001": {
+            "desc": "Body;Machining, Spinning Wrench;Iron Roughnecks",
+            "base_unit": 22.5
+        },
+        "10450051-003": {
+            "desc": "Plate, Proprietary;TRUNNION,Machining;Pipe Handling;PRS-8;Make From P/N 131849;ABS Certification",
+            "base_unit": 10.0
+        },
+        "10450058-001": {
+            "desc": "Carriage, Proprietary;Upper, Casting, Weldment, Machining;L 30.172 in;Pipe Handling;PRS-8",
+            "base_unit": 11.0
+        },
+        "10379956-001": {
+            "desc": "Case;Gear, Modification;Weldment;TDS-1000",
+            "base_unit": 24.5
+        },
+        "10381512-002": {
+            "desc": "Cover;Bonnet, Brake Housing, Machining;Top Drives;IDS-350P;-501 Configuration",
+            "base_unit": 19.0
+        },
+        "10449784-001": {
+            "desc": "Cap, Proprietary;Piston;Pipe Handling;PRS-4i",
+            "base_unit": 21.0
+        },
+        "10450051-001": {
+            "desc": "Plate, Proprietary;Trunnion;Pipe Handling;PRS-8;Thk 5.88 in;Matl MS00046;Make from 131849",
+            "base_unit": 10.0
+        },
+        "10376078-001": {
+            "desc": "Body;Machining;Pipe Handling;SSW51",
+            "base_unit": 25.8
+        },
+        "10455933-013": {
+            "desc": "Cover;Slew Gear, Machining, DNV Certified;Pipe Handling;PRS-5",
+            "base_unit": 21.0
+        },
+        "10381678-001": {
+            "desc": "Manifold, Proprietary;Aluminum;Top Drives;TDS-10RR;Matl Aluminum",
+            "base_unit": 6.0
+        },
+        "10358117-001": {
+            "desc": "Adapter, Proprietary;Rotating Link, 250 Ton;Top Drives;TDS-10",
+            "base_unit": 8.0
+        },
+        "10462717-001": {
+            "desc": "Rotating Link Adapter;Elevator, Assembly, Solid Body (Machining), Riser;Custom tonne;Std. Part;Meets API 8C PSL1 Requiremnts;650/750T;No Certification;TDS-8S",
+            "base_unit": 4.0
+        },
+        "10391054-003": {
+            "desc": "Rotating Link Adapter;Link Hanger, 1000T, ID ?270.5;1000 tonne;DNV;HPS",
+            "base_unit": 18.0
+        },
+        "10382539-001": {
+            "desc": "Body;Clamp Cylinder, PSDS; (S/N 37-UP);Pipe Handling;PH-6",
+            "base_unit": 15.3
+        },
+        "10379952-004": {
+            "desc": "Body;Main, 1000 Ton, DNV;Top Drives;TDS-1000",
+            "base_unit": 68.0
+        },
+        "10658485-001": {
+            "desc": "Body;Machined, ABS Certified, Jaw, PRS-8i;Pipe Handling",
+            "base_unit": 107.0
+        },
+        "10450035-004": {
+            "desc": "Component, Pipe Handling;Chassis, Lower Drive, Machining;PRS-3i;ABS Certified",
+            "base_unit": 18.0
+        },
+        "10358190-001": {
+            "desc": "Arrestor;Actuator Shell, IBOP SG (Intelliserv);IBOP",
+            "base_unit": 7.5
+        },
+        "10358117-002": {
+            "desc": "Adapter, Proprietary;Rotating Link, Machining, 250 Ton;Top Drives;TDS-10SA",
+            "base_unit": 8.0
+        },
+        "10471339-002": {
+            "desc": "Finger;pivot, finger;Pipe Handling",
+            "base_unit": 4.5
+        },
+        "10375172-001": {
+            "desc": "Adapter, Proprietary;Flange Motor Weldment;Top Drives",
+            "base_unit": 11.0
+        },
+        "10450088-001": {
+            "desc": "Housing, Proprietary;Top Of Column;Pipe Handling;PRS-8i",
+            "base_unit": 3.5
+        },
+        "10448188-001": {
+            "desc": "Arrestor;Pipe Handler, Torque (Machining);TDS-9S",
+            "base_unit": 6.3
+        },
+        "10450047-001": {
+            "desc": "Component, Pipe Handling;Cross, Trunnion, Machined;PRS-3I",
+            "base_unit": 3.5
+        },
+        "10460201-001": {
+            "desc": "Block, Proprietary;Swivel, Machining;Top Drives;TDS-5",
+            "base_unit": 4.8
+        },
+        "10380452-001": {
+            "desc": "Main Body;TDS-8SA;No Classification/Verification Society;MinDsgn -20 ?C;750 Ton;Casting, API 8C PSL1;No Certification",
+            "base_unit": 57.2
+        },
+        "10462534-001": {
+            "desc": "Body;Clamp Cylinder;Top Drives;PH-85",
+            "base_unit": 17.5
+        },
+        "10746822-002": {
+            "desc": "Link, Proprietary;Hanger, 1000T, ID ?248 Machining;Top Drives;HPS;ABS Certified",
+            "base_unit": 13.0
+        },
+        "10375710-001": {
+            "desc": "Block, Proprietary;Swivel, 10 Port, Powered, Machining;Top Drives;TDS-4S",
+            "base_unit": 6.8
+        },
+        "10914326-001": {
+            "desc": "Bushing, Proprietary;Master;Rotary Tables;-1M Configuration",
+            "base_unit": 3.5
+        },
+        "10381570-005": {
+            "desc": "Adapter, Proprietary;Rotating Link;Top Drives;TDS",
+            "base_unit": 12.0
+        },
+        "10455485-001": {
+            "desc": "Cover;Bonnet, Machining;Top Drives;TDX-1250",
+            "base_unit": 4.0
+        },
+        "10450047-003": {
+            "desc": "Component, Pipe Handling;Cross, Trunnion, Machined;PRS-8I;ABS Certified",
+            "base_unit": 3.5
+        },
+        "10381570-003": {
+            "desc": "Rotating Link Adapter;Rotating Link;1000 Ton;ABS",
+            "base_unit": 14.6
+        },
+        "10360894-001": {
+            "desc": "Body;Assembly, Machining, TD150P-E;Top Drives;Swivel Assembly",
+            "base_unit": 11.0
+        },
+        "10450066-001": {
+            "desc": "Plate, Proprietary;Slew;Pipe Handling;PRS-8;Thk 30 in;131862, casting",
+            "base_unit": 6.0
+        },
+        "10464681-002": {
+            "desc": "Cover;Bonnet, Motor Support, Machining (Big Bore);Top Drives;TDS/8/8SA",
+            "base_unit": 18.2
+        },
+        "10479002-001": {
+            "desc": "Bearing, Proprietary;Main, Oil Dam;Top Drives;TDX-1250;ID 36.5 in;OD 39.9 in;W 37.060 in;ID 36.5 in",
+            "base_unit": 1.5
+        },
+        "10481274-001": {
+            "desc": "Rotor;Swivel;ID 16.254 in;OD 21 in;Top Drives;TDX-1000;Matl Make from M614003958",
+            "base_unit": 52.7
+        },
+        "10465585-001": {
+            "desc": "Flange, Proprietary;Rotating Head Top Adaptor, 2 MOTORS;Top Drives;HPS-03/-04",
+            "base_unit": 6.0
+        },
+        "10464588-001": {
+            "desc": "Clamp, Proprietary;Sliding;Top Drives;PH-85",
+            "base_unit": 12.9
+        },
+        "10455666-001": {
+            "desc": "Body;Gripper;Top Drives;PH150;Replaces BAS",
+            "base_unit": 3.0
+        },
+        "10450058-006": {
+            "desc": "Carriage, Proprietary;Upper Weldment, ABS Certification;L 30.172 in;Pipe Handling;PRS-8",
+            "base_unit": 11.0
+        },
+        "10444798-002": {
+            "desc": "Cover;Bonnet, Machining;Top Drives;IDS-4A",
+            "base_unit": 2.5
+        },
+        "10455379-001": {
+            "desc": "Rotor;Swivel Machining;ID 17.254 in;OD 18.12 in;Top Drives;TDX-1250;Matl 30183029",
+            "base_unit": 20.3
+        },
+        "10381070-001": {
+            "desc": "Cover;Motor Support, Machining;Top Drives;TDS-8S/1000",
+            "base_unit": 30.0
+        },
+        "10380584-001": {
+            "desc": "Case;8S Lower Gear;Weldment;TDS-8S",
+            "base_unit": 30.2
+        },
+        "10447798-001": {
+            "desc": "Cover;Gear, Slew, Machining;Pipe Handling;PRS-5R;Matl MS00046;Weldment",
+            "base_unit": 27.5
+        },
+        "10462246-001": {
+            "desc": "Torque Tube;Extended",
+            "base_unit": 2.5
+        },
+        "10451314-001": {
+            "desc": "Handling Ring Assembly;PS2-500A;No Classification/Verification Society;Conductor",
+            "base_unit": 20.0
+        },
+        "10464538-001": {
+            "desc": "Tube, Proprietary;Torque;L 23.900 x OD 12.000 in;Wall 1.8 in;Top Drives;PH-85",
+            "base_unit": 2.5
+        },
+        "10444364-001": {
+            "desc": "Case;Gear, Machined, IDS, API PSL 1, With Inlet Holes;1.50-11.5 NPT Oil Inlet Holes",
+            "base_unit": 14.5
+        },
+        "10479040-002": {
+            "desc": "Rotating Link Adapter;350 Ton;350 Ton;No Certification;IDS-350",
+            "base_unit": 26.4
+        },
+        "10381070-002": {
+            "desc": "Cover;Motor Support, Machining;Top Drives;TDS-8S/1000",
+            "base_unit": 23.9
+        },
+        "10470032-001": {
+            "desc": "Body;Machining, For S-120;Top Drives;PS2",
+            "base_unit": 10.8
+        },
+        "10381570-001": {
+            "desc": "Adapter, Proprietary;Rotating Link;Top Drives;TDS",
+            "base_unit": 13.0
+        },
+        "10379952-003": {
+            "desc": "Main Body;TDS-1000;ABS + CDS;MinDsgn -20 ?C;1000 Ton",
+            "base_unit": 70.3
+        },
+        "10455933-004": {
+            "desc": "Cover;Gear, Slew, Machining;Pipe Handling;PRS-4, PRS-5;Matl MS00006, MS00046",
+            "base_unit": 21.0
+        },
+        "10016223-002": {
+            "desc": "Rotating Link Adapter;Elevator, Assembly, Riser, Solid Body;1000 tonne;No Certification;TDS-8S",
+            "base_unit": 3.0
+        },
+        "10450035-001": {
+            "desc": "Component, Pipe Handling;Chassis, Lower Drive, Machining;PRS-3I",
+            "base_unit": 18.0
+        }
+    },
+    "units": [
+        {
+            "key": "10016223-002_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10358117-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10358117-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10358117-002_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": -4.0
+        },
+        {
+            "key": "10358190-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10358190-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10360772-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10360772-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10360894-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 1.5
+        },
+        {
+            "key": "10360894-001_2014.0",
+            "x1": 2014.0,
+            "y1": 1.5,
+            "x2": 2015.0,
+            "y2": 1.8000000000000007
+        },
+        {
+            "key": "10375172-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10375710-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10376078-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10379935-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10379935-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10379952-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 2.200000000000003
+        },
+        {
+            "key": "10379952-001_2014.0",
+            "x1": 2014.0,
+            "y1": 2.200000000000003,
+            "x2": 2015.0,
+            "y2": 4.799999999999997
+        },
+        {
+            "key": "10379952-003_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": -2.299999999999997
+        },
+        {
+            "key": "10379952-004_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10379956-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.3999999999999986
+        },
+        {
+            "key": "10380452-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10380584-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 1.8000000000000007
+        },
+        {
+            "key": "10381070-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": -0.3000000000000007
+        },
+        {
+            "key": "10381070-002_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.8000000000000007
+        },
+        {
+            "key": "10381512-002_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.10000000000000142
+        },
+        {
+            "key": "10381512-002_2014.0",
+            "x1": 2014.0,
+            "y1": 0.10000000000000142,
+            "x2": 2015.0,
+            "y2": -5.0
+        },
+        {
+            "key": "10381570-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 2.0
+        },
+        {
+            "key": "10381570-001_2014.0",
+            "x1": 2014.0,
+            "y1": 2.0,
+            "x2": 2015.0,
+            "y2": 2.0
+        },
+        {
+            "key": "10381570-003_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.40000000000000036
+        },
+        {
+            "key": "10381570-005_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 3.0
+        },
+        {
+            "key": "10381678-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10381678-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10382539-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10382539-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10391054-003_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10444364-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": -2.0
+        },
+        {
+            "key": "10444798-002_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10447798-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10447798-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10448126-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10448188-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10449784-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 1.0
+        },
+        {
+            "key": "10449784-001_2014.0",
+            "x1": 2014.0,
+            "y1": 1.0,
+            "x2": 2015.0,
+            "y2": 1.0
+        },
+        {
+            "key": "10449994-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10449994-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450035-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450035-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450035-004_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450047-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450047-003_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450051-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450051-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450051-003_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450051-003_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450058-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.1999999999999993
+        },
+        {
+            "key": "10450058-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.1999999999999993,
+            "x2": 2015.0,
+            "y2": 0.1999999999999993
+        },
+        {
+            "key": "10450058-006_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450058-006_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450066-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450066-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10450088-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10451314-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10455379-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": -0.5
+        },
+        {
+            "key": "10455485-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10455485-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10455666-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10455933-004_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10455933-013_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10460201-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10460201-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10460287-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10462246-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10462246-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10462534-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.1999999999999993
+        },
+        {
+            "key": "10462534-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.1999999999999993,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10462717-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10462717-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10464492-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": -0.5
+        },
+        {
+            "key": "10464538-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10464538-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10464588-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": -2.5999999999999996
+        },
+        {
+            "key": "10464588-001_2014.0",
+            "x1": 2014.0,
+            "y1": -2.5999999999999996,
+            "x2": 2015.0,
+            "y2": -2.9000000000000004
+        },
+        {
+            "key": "10464681-002_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": -0.6999999999999993
+        },
+        {
+            "key": "10464939-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10464939-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10465585-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10465585-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10470032-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 1.799999999999999
+        },
+        {
+            "key": "10470032-001_2014.0",
+            "x1": 2014.0,
+            "y1": 1.799999999999999,
+            "x2": 2015.0,
+            "y2": 2.0
+        },
+        {
+            "key": "10471339-002_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10471339-002_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10479002-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10479002-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10479040-002_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": -15.399999999999999
+        },
+        {
+            "key": "10481205-005_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": -0.1999999999999993
+        },
+        {
+            "key": "10481274-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": 0.0
+        },
+        {
+            "key": "10658485-001_2013.0",
+            "x1": 2013.0,
+            "y1": 0.0,
+            "x2": 2014.0,
+            "y2": -1.0
+        },
+        {
+            "key": "10658485-001_2014.0",
+            "x1": 2014.0,
+            "y1": -1.0,
+            "x2": 2015.0,
+            "y2": -1.0
+        },
+        {
+            "key": "10746822-002_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 2.0
+        },
+        {
+            "key": "10914326-001_2014.0",
+            "x1": 2014.0,
+            "y1": 0.0,
+            "x2": 2015.0,
+            "y2": 0.0
+        }
+    ]
+}
